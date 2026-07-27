@@ -1,0 +1,22 @@
+# Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+
+# Node / Frontend
+node_modules/
+dist/
+
+# Environment files
+.env
+*.env
+
+# Operating System & Editor Files
+.DS_Store
+.vscode/
+.idea/
