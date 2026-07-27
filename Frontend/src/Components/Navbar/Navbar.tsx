@@ -10,7 +10,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  title = 'Solution Portfolio',
+  title = 'AI First Test DNA',
   user,
   onSignOut,
   showBackButton = false,
