@@ -202,7 +202,7 @@ function App() {
 
   const navbarTitle =
     view === 'projects'
-      ? 'Solution Portfolio'
+      ? 'AI First Test DNA'
       : view === 'subprojects'
       ? selectedParentProject?.name || 'Sub Projects'
       : `${selectedParentProject?.name} / ${selectedSubProject?.name}`;

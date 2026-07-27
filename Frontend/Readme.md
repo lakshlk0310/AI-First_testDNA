@@ -6,7 +6,7 @@ A modern, responsive React + TypeScript frontend application for organizing, sea
 
 ## 🌟 Key Features
 
-- **Solution Portfolio & Projects Page**:
+- **AI First Test DNA & Projects Page**:
   - Displays main project workspaces with category tags, subproject counters, and real-time search filtering.
   - Dynamically create new main projects with custom industry categories, icon symbols, and tags.
 
