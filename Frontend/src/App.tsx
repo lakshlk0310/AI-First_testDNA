@@ -1,31 +1,43 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
+import { AuthPage } from './Components/Auth';
 import { Navbar } from './Components/Navbar';
+import { Sidebar } from './Components/Sidebar';
+import { WorkspaceDashboard, UnderDevelopment } from './Components/Workspace';
+
 import {
   ProjectsPage,
   SubProjectsPage,
   CreateProjectModal,
   CreateSubProjectModal,
+  EditProjectModal,
+  EditSubProjectModal,
 } from './Components/Project';
 import type { Project, SubProject, UserProfile } from './types/project';
 import {
   fetchProjects,
   createProjectApi,
+  updateProjectApi,
   deleteProjectApi,
   createSubProjectApi,
+  updateSubProjectApi,
   deleteSubProjectApi,
 } from './services/api';
-
-const INITIAL_USER: UserProfile = {
-  name: 'Admin User',
-  role: 'Administrator',
-  initials: 'AK',
-  email: 'admin@promantus.com',
-};
+import { getStoredSession, clearSession } from './services/authService';
 
 const STORAGE_KEY = 'ai_first_projects_data';
 
 function App() {
+  // Session State
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    const session = getStoredSession();
+    return session.user;
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    const session = getStoredSession();
+    return session.isAuthenticated;
+  });
+
   const [projects, setProjects] = useState<Project[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -38,20 +50,25 @@ function App() {
     return [];
   });
 
-  const [user] = useState<UserProfile>(INITIAL_USER);
   const [view, setView] = useState<'projects' | 'subprojects' | 'workspace'>('projects');
   const [selectedParentProject, setSelectedParentProject] = useState<Project | null>(null);
   const [selectedSubProject, setSelectedSubProject] = useState<SubProject | null>(null);
+  const [activeRoute, setActiveRoute] = useState<string>('dashboard');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [isCreateSubProjectOpen, setIsCreateSubProjectOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingSubProject, setEditingSubProject] = useState<{ parentId: string; subProject: SubProject } | null>(null);
 
   // Ref guard to prevent duplicate API calls during React StrictMode initial rendering
   const fetchedRef = useRef(false);
 
-  // Fetch projects from Python FastAPI + MongoDB backend on mount (runs exactly once)
+  // Fetch projects from Python FastAPI + MongoDB backend on mount if authenticated
   useEffect(() => {
+    if (!isAuthenticated) return;
     if (fetchedRef.current) return;
     fetchedRef.current = true;
 
@@ -69,26 +86,55 @@ function App() {
     };
 
     loadProjects();
-  }, []);
+  }, [isAuthenticated]);
 
   // Sync state to LocalStorage
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    if (projects.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    }
   }, [projects]);
+
+  // Auto-dismiss Toast Message
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+
+  const handleLoginSuccess = (userProfile: UserProfile) => {
+    setUser(userProfile);
+    setIsAuthenticated(true);
+    setView('projects');
+    setToastMessage(`Welcome back, ${userProfile.name}!`);
+  };
+
+  const handleSignOut = () => {
+    clearSession();
+    setUser(null);
+    setIsAuthenticated(false);
+    setView('projects');
+    setSelectedParentProject(null);
+    setSelectedSubProject(null);
+  };
 
   const handleSelectParentProject = (project: Project) => {
     setSelectedParentProject(project);
     setView('subprojects');
   };
 
+  // Redirect to Dashboard when user selects a sub-project
   const handleSelectSubProject = (subProject: SubProject) => {
     setSelectedSubProject(subProject);
+    setActiveRoute('dashboard');
     setView('workspace');
   };
 
   // Create Project via Python REST API
   const handleCreateProject = async (newProject: Project) => {
     setProjects((prev) => [newProject, ...prev]);
+    setToastMessage(`Project "${newProject.name}" created successfully.`);
 
     try {
       const created = await createProjectApi(newProject);
@@ -100,13 +146,30 @@ function App() {
     }
   };
 
+  // Edit Project via Python REST API
+  const handleUpdateProject = async (updatedProject: Project) => {
+    setProjects((prev) => prev.map((p) => (p.id === updatedProject.id ? updatedProject : p)));
+    if (selectedParentProject?.id === updatedProject.id) {
+      setSelectedParentProject(updatedProject);
+    }
+    setToastMessage(`Project "${updatedProject.name}" updated successfully.`);
+
+    try {
+      await updateProjectApi(updatedProject.id, updatedProject);
+    } catch (err) {
+      console.warn('Updated project locally (Python REST API offline):', err);
+    }
+  };
+
   // Delete Project via Python REST API
   const handleDeleteProject = async (projectId: string) => {
+    const target = projects.find((p) => p.id === projectId);
     setProjects((prev) => prev.filter((p) => p.id !== projectId));
     if (selectedParentProject?.id === projectId) {
       setSelectedParentProject(null);
       setView('projects');
     }
+    setToastMessage(`Project "${target?.name || projectId}" deleted.`);
 
     try {
       await deleteProjectApi(projectId);
@@ -133,12 +196,13 @@ function App() {
       setSelectedParentProject((prev) =>
         prev
           ? {
-              ...prev,
-              subProjects: [...(prev.subProjects || []), newSub],
-            }
+            ...prev,
+            subProjects: [...(prev.subProjects || []), newSub],
+          }
           : null
       );
     }
+    setToastMessage(`Sub-project "${newSub.name}" created successfully.`);
 
     try {
       const updatedParent = await createSubProjectApi(parentId, newSub);
@@ -150,6 +214,44 @@ function App() {
       }
     } catch (err) {
       console.warn('Saved sub-project locally (Python REST API offline):', err);
+    }
+  };
+
+  // Edit Subproject via Python REST API
+  const handleUpdateSubProject = async (parentId: string, updatedSub: SubProject) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id === parentId) {
+          return {
+            ...p,
+            subProjects: (p.subProjects || []).map((sp) => (sp.id === updatedSub.id ? updatedSub : sp)),
+          };
+        }
+        return p;
+      })
+    );
+
+    if (selectedParentProject?.id === parentId) {
+      setSelectedParentProject((prev) =>
+        prev
+          ? {
+            ...prev,
+            subProjects: (prev.subProjects || []).map((sp) => (sp.id === updatedSub.id ? updatedSub : sp)),
+          }
+          : null
+      );
+    }
+
+    if (selectedSubProject?.id === updatedSub.id) {
+      setSelectedSubProject(updatedSub);
+    }
+
+    setToastMessage(`Sub-project "${updatedSub.name}" updated successfully.`);
+
+    try {
+      await updateSubProjectApi(parentId, updatedSub.id, updatedSub);
+    } catch (err) {
+      console.warn('Updated sub-project locally (Python REST API offline):', err);
     }
   };
 
@@ -171,12 +273,13 @@ function App() {
       setSelectedParentProject((prev) =>
         prev
           ? {
-              ...prev,
-              subProjects: (prev.subProjects || []).filter((sp) => sp.id !== subProjectId),
-            }
+            ...prev,
+            subProjects: (prev.subProjects || []).filter((sp) => sp.id !== subProjectId),
+          }
           : null
       );
     }
+    setToastMessage('Sub-project deleted.');
 
     try {
       const updatedParent = await deleteSubProjectApi(parentId, subProjectId);
@@ -201,123 +304,117 @@ function App() {
   };
 
   const navbarTitle =
-    view === 'projects'
+    view === 'projects' || view === 'subprojects'
       ? 'AI First Test DNA'
-      : view === 'subprojects'
-      ? selectedParentProject?.name || 'Sub Projects'
       : `${selectedParentProject?.name} / ${selectedSubProject?.name}`;
 
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--off)' }}>
-      <Navbar
-        title={navbarTitle}
-        user={user}
-        showBackButton={view !== 'projects'}
-        onBack={handleBack}
-        onSignOut={() => alert('Sign out clicked')}
-      />
+  // IF NOT AUTHENTICATED -> RENDER AUTH PAGE
+  if (!isAuthenticated || !user) {
+    return <AuthPage onLoginSuccess={handleLoginSuccess} />;
+  }
 
-      {loading && projects.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--muted)', fontSize: '14px' }}>
-          Loading workspaces from MongoDB backend...
+  // IF AUTHENTICATED -> RENDER APPLICATION WORKSPACE
+  return (
+    <div style={{ minHeight: '100vh', background: '#ffffff', position: 'relative' }}>
+      {/* Global Toast Notification */}
+      {toastMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            background: 'var(--navy)',
+            color: 'white',
+            padding: '12px 20px',
+            borderRadius: '10px',
+            boxShadow: 'var(--shadow-md)',
+            zIndex: 1000,
+            fontSize: '13px',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            border: '1px solid rgba(2, 195, 154, 0.3)',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ color: 'var(--mint)', fontSize: '18px' }}>
+            check_circle
+          </span>
+          {toastMessage}
         </div>
       )}
 
-      {view === 'projects' && (
-        <ProjectsPage
-          projects={projects}
-          onSelectProject={handleSelectParentProject}
-          onCreateProjectClick={() => setIsCreateProjectOpen(true)}
-          onDeleteProject={handleDeleteProject}
-        />
-      )}
+      {/* Workspace Dashboard View with Sidebar App Shell layout */}
+      {view === 'workspace' && selectedSubProject ? (
+        <div className="app-shell">
+          <Sidebar
+            activeRoute={activeRoute}
+            onSelectRoute={(routeId) => setActiveRoute(routeId)}
+            selectedProject={selectedParentProject}
+            selectedSubProject={selectedSubProject}
+            user={user}
+            onSwitchWorkspace={() => setView('subprojects')}
+            onSignOut={handleSignOut}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          />
 
-      {view === 'subprojects' && selectedParentProject && (
-        <SubProjectsPage
-          parentProject={selectedParentProject}
-          onSelectSubProject={handleSelectSubProject}
-          onCreateSubProjectClick={() => setIsCreateSubProjectOpen(true)}
-          onBackToProjects={() => setView('projects')}
-          onDeleteSubProject={handleDeleteSubProject}
-        />
-      )}
+          <div className={`main-content ${isSidebarCollapsed ? 'expanded' : ''}`}>
+            <Navbar
+              title={navbarTitle}
+              user={user}
+              showBackButton={true}
+              onBack={handleBack}
+              onSignOut={handleSignOut}
+            />
 
-      {view === 'workspace' && selectedSubProject && (
-        <div className="page" style={{ padding: '28px' }}>
-          <div
-            style={{
-              background: 'white',
-              borderRadius: '16px',
-              border: '1.5px solid var(--border)',
-              padding: '32px',
-              boxShadow: 'var(--shadow-xs)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: 'rgba(2, 168, 150, 0.12)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '28px', color: 'var(--teal)' }}>
-                  {selectedSubProject.icon || 'layers'}
-                </span>
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--teal)' }}>
-                  {selectedSubProject.type || 'Sub-Project Workspace'}
-                </span>
-                <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--navy)', margin: '2px 0 0 0' }}>
-                  {selectedSubProject.name}
-                </h2>
-              </div>
-            </div>
-
-            <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '24px', lineHeight: 1.6 }}>
-              {selectedSubProject.desc || 'No description provided.'}
-            </p>
-
-            {selectedSubProject.urls && selectedSubProject.urls.length > 0 && (
-              <div style={{ marginBottom: '28px' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--navy)', marginBottom: '10px' }}>
-                  Configured Environment Endpoints:
-                </h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                  {selectedSubProject.urls.map((u, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        background: 'var(--off)',
-                        border: '1px solid var(--border)',
-                        padding: '8px 14px',
-                        borderRadius: '8px',
-                        fontSize: '12px',
-                      }}
-                    >
-                      <strong style={{ color: 'var(--teal)', marginRight: '6px' }}>{u.env || 'Endpoint'}:</strong>
-                      <span style={{ fontFamily: 'monospace', color: 'var(--text)' }}>{u.url}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {activeRoute === 'dashboard' ? (
+              <WorkspaceDashboard
+                selectedProject={selectedParentProject}
+                selectedSubProject={selectedSubProject}
+                onSwitchWorkspace={() => setView('subprojects')}
+              />
+            ) : (
+              <UnderDevelopment
+                routeId={activeRoute}
+                onGoToDashboard={() => setActiveRoute('dashboard')}
+              />
             )}
-
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <button className="btn-sm btn-teal" onClick={() => alert(`Launching ${selectedSubProject.name}...`)}>
-                Launch Automation Suite
-              </button>
-              <button className="btn-sm btn-ghost" onClick={() => setView('subprojects')}>
-                Switch Sub-Project
-              </button>
-            </div>
           </div>
+        </div>
+      ) : (
+        /* Projects and Sub-Projects selection views */
+        <div>
+          <Navbar
+            title={navbarTitle}
+            user={user}
+            showBackButton={view !== 'projects'}
+            onBack={handleBack}
+            onSignOut={handleSignOut}
+          />
+
+          {view === 'projects' && (
+            <ProjectsPage
+              projects={projects}
+              loading={loading}
+              onSelectProject={handleSelectParentProject}
+              onCreateProjectClick={() => setIsCreateProjectOpen(true)}
+              onEditProject={(p) => setEditingProject(p)}
+              onDeleteProject={handleDeleteProject}
+            />
+          )}
+
+          {view === 'subprojects' && selectedParentProject && (
+            <SubProjectsPage
+              parentProject={selectedParentProject}
+              loading={loading}
+              onSelectSubProject={handleSelectSubProject}
+              onCreateSubProjectClick={() => setIsCreateSubProjectOpen(true)}
+              onEditSubProject={(parentId, sp) => setEditingSubProject({ parentId, subProject: sp })}
+              onBackToProjects={() => setView('projects')}
+              onDeleteSubProject={handleDeleteSubProject}
+            />
+          )}
         </div>
       )}
 
@@ -334,6 +431,21 @@ function App() {
         selectedParentId={selectedParentProject?.id}
         onClose={() => setIsCreateSubProjectOpen(false)}
         onCreateSubProject={handleCreateSubProject}
+      />
+
+      <EditProjectModal
+        isOpen={!!editingProject}
+        project={editingProject}
+        onClose={() => setEditingProject(null)}
+        onSaveProject={handleUpdateProject}
+      />
+
+      <EditSubProjectModal
+        isOpen={!!editingSubProject}
+        parentProjectId={editingSubProject?.parentId || ''}
+        subProject={editingSubProject?.subProject || null}
+        onClose={() => setEditingSubProject(null)}
+        onSaveSubProject={handleUpdateSubProject}
       />
     </div>
   );

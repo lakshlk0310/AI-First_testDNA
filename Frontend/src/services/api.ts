@@ -92,3 +92,26 @@ export const deleteSubProjectApi = async (projectId: string, subProjectId: strin
   const result = await response.json();
   return result.data;
 };
+
+// Update a subproject under a parent project in MongoDB
+export const updateSubProjectApi = async (
+  projectId: string,
+  subProjectId: string,
+  updates: Partial<SubProject>
+): Promise<Project> => {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/subprojects/${subProjectId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || errorData.message || `Failed to update sub-project (${response.status})`);
+  }
+
+  const result = await response.json();
+  return result.data;
+};

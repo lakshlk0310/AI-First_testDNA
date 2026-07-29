@@ -18,10 +18,17 @@ export interface Project {
   id: string;
   name: string;
   desc: string;
+  baseUrl?: string;
+  creationMethod?: string;
+  status?: string;
+  userStoriesCount?: number;
+  testCasesCount?: number;
+  scriptsCount?: number;
   icon?: string;
   category?: string;
   tags?: string[];
   createdAt?: string;
+  updatedAt?: string;
   subProjects: SubProject[];
 }
 

@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  Button,
+  IconButton,
+  Box,
+  Typography,
+  Chip,
+} from '@mui/material';
+import { Close as CloseIcon, Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import type { Project, SubProject, EnvironmentUrl } from '../../types/project';
+import { TestDNAIcon } from './TestDNAIcon';
 
 interface CreateSubProjectModalProps {
   isOpen: boolean;
@@ -16,6 +33,7 @@ export const CreateSubProjectModal: React.FC<CreateSubProjectModalProps> = ({
   onClose,
   onCreateSubProject,
 }) => {
+  const [creationMethod, setCreationMethod] = useState<'direct' | 'jira'>('direct');
   const [parentId, setParentId] = useState(selectedParentId || projects[0]?.id || '');
   const [name, setName] = useState('');
   const [type, setType] = useState('Web Application');
@@ -41,7 +59,7 @@ export const CreateSubProjectModal: React.FC<CreateSubProjectModalProps> = ({
   };
 
   const addUrlRow = () => {
-    setUrls([...urls, { env: '', url: '' }]);
+    setUrls([...urls, { env: 'STG', url: '' }]);
   };
 
   const removeUrlRow = (index: number) => {
@@ -76,157 +94,284 @@ export const CreateSubProjectModal: React.FC<CreateSubProjectModalProps> = ({
     setName('');
     setDesc('');
     setUrls([]);
+    setCreationMethod('direct');
     onClose();
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: '620px' }} onClick={(e) => e.stopPropagation()}>
-        <h3>Create Sub Project</h3>
-        <p>
-          Configure a targeted sub-project workspace under{' '}
-          <strong style={{ color: 'var(--teal)' }}>{currentParent?.name || 'Parent Project'}</strong>.
-        </p>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle sx={{ m: 0, p: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: '#0B1740', letterSpacing: '-0.3px', margin: 0 }}>
+            Create Sub Project
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#64708A' }}>
+            Configure a targeted sub-project workspace under{' '}
+            <strong style={{ color: '#028090' }}>{currentParent?.name || 'Parent Project'}</strong>
+          </Typography>
+        </Box>
+        <IconButton onClick={onClose} aria-label="close">
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-        <form onSubmit={handleSubmit}>
-          <div className="field">
-            <label>Parent Project Name *</label>
-            <select
-              className="proj-dropdown"
-              value={parentId}
-              onChange={(e) => setParentId(e.target.value)}
-              required
-            >
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <form onSubmit={handleSubmit}>
+        <DialogContent dividers sx={{ py: 2.5 }}>
+          {/* Creation Method Selection */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 1, textTransform: 'uppercase' }}>
+              Creation method <span style={{ color: '#D90429' }}>*</span>
+            </Typography>
 
-          <div className="grid-2">
-            <div className="field">
-              <label>Sub Project Name *</label>
-              <input
-                type="text"
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+              {/* Option 1: Create in TestDNA */}
+              <Box
+                onClick={() => setCreationMethod('direct')}
+                sx={{
+                  border: '2px solid',
+                  borderColor: creationMethod === 'direct' ? '#34b9cb' : '#E2E8F0',
+                  borderRadius: '12px',
+                  padding: '14px',
+                  cursor: 'pointer',
+                  backgroundColor: creationMethod === 'direct' ? 'rgba(52, 185, 203, 0.04)' : '#ffffff',
+                  boxShadow: creationMethod === 'direct' ? '0 4px 12px rgba(52, 185, 203, 0.12)' : 'none',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: '#34b9cb',
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                  <Box
+                    sx={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: '10px',
+                      backgroundColor: '#FEF2F2',
+                      color: '#34b9cb',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <TestDNAIcon size={24} variant="red" />
+                  </Box>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0B1740' }}>
+                        Create in TestDNA
+                      </Typography>
+                      <Box
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: '50%',
+                          border: '2px solid',
+                          borderColor: creationMethod === 'direct' ? '#34b9cb' : '#CBD5E1',
+                          backgroundColor: creationMethod === 'direct' ? '#34b9cb' : 'transparent',
+                          boxShadow: creationMethod === 'direct' ? 'inset 0 0 0 3px #ffffff' : 'none',
+                        }}
+                      />
+                    </Box>
+                    <Typography variant="caption" sx={{ color: '#64708A', display: 'block', mt: 0.5, lineHeight: 1.4 }}>
+                      Build your sub-project workspace directly from scratch
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Option 2: Import from Jira (Disabled) */}
+              <Box
+                sx={{
+                  border: '2px solid #F1F5F9',
+                  borderRadius: '12px',
+                  padding: '14px',
+                  cursor: 'not-allowed',
+                  backgroundColor: '#F8FAFC',
+                  opacity: 0.7,
+                }}
+                title="Jira integration is coming soon!"
+              >
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                  <Box
+                    sx={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: '10px',
+                      backgroundColor: '#E0F2FE',
+                      color: '#0284C7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M11.571 11.513H0a11.534 11.534 0 0 0 11.513 11.513V11.513zm.858-11.513v11.513H24A11.534 11.534 0 0 0 12.429 0zM12.429 12.429V24C18.788 24 24 18.788 24 12.429H12.429z" />
+                    </svg>
+                  </Box>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0.5 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#64748B' }}>
+                        Import from Jira
+                      </Typography>
+                      <Chip
+                        label="In Progress"
+                        size="small"
+                        sx={{
+                          backgroundColor: '#FFF7ED',
+                          color: '#C2410C',
+                          border: '1px solid #FFEDD5',
+                          fontWeight: 700,
+                          fontSize: '10.5px',
+                          height: 20,
+                        }}
+                      />
+                    </Box>
+                    <Typography variant="caption" sx={{ color: '#94A3B8', display: 'block', mt: 0.5, lineHeight: 1.4 }}>
+                      Import tickets and epics directly from Jira workspace
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Parent Project Selector */}
+          <Box sx={{ mb: 2.5 }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
+              Parent Project Name <span style={{ color: '#D90429' }}>*</span>
+            </Typography>
+            <FormControl fullWidth size="small">
+              <Select value={parentId} onChange={(e) => setParentId(e.target.value as string)} required>
+                {projects.map((p) => (
+                  <MenuItem key={p.id} value={p.id}>
+                    {p.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Sub Project Name & Type */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 2.5 }}>
+            <Box>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
+                Sub Project Name <span style={{ color: '#D90429' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
                 placeholder="e.g. Mobile Banking App"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                variant="outlined"
               />
-            </div>
-            <div className="field">
-              <label>Sub Project Type</label>
-              <select className="proj-dropdown" value={type} onChange={(e) => setType(e.target.value)}>
-                <option value="Web Application">Web Application</option>
-                <option value="Mobile App (iOS/Android)">Mobile App (iOS/Android)</option>
-                <option value="Core REST / GraphQL API">Core REST / GraphQL API</option>
-                <option value="Cloud Engine Service">Cloud Engine Service</option>
-                <option value="Microservice">Microservice</option>
-              </select>
-            </div>
-          </div>
+            </Box>
 
-          <div className="field">
-            <label>Sub Project Description</label>
-            <input
-              type="text"
-              placeholder="Short description of this subproject..."
+            <Box>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
+                Sub Project Type
+              </Typography>
+              <FormControl fullWidth size="small">
+                <Select value={type} onChange={(e) => setType(e.target.value as string)}>
+                  <MenuItem value="Web Application">Web Application</MenuItem>
+                  <MenuItem value="Mobile App (iOS/Android)">Mobile App (iOS/Android)</MenuItem>
+                  <MenuItem value="Core REST / GraphQL API">Core REST / GraphQL API</MenuItem>
+                  <MenuItem value="Cloud Engine Service">Cloud Engine Service</MenuItem>
+                  <MenuItem value="Microservice">Microservice</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
+
+          {/* Sub Project Description */}
+          <Box sx={{ mb: 2.5 }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
+              Sub Project Description (Optional)
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              placeholder="Short description of this sub-project application..."
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
+              variant="outlined"
             />
-          </div>
+          </Box>
 
-          <div className="field">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-              <label style={{ margin: 0 }}>Environment URLs</label>
-              <button
-                type="button"
-                className="btn-sm btn-ghost"
-                style={{ fontSize: '11px', padding: '3px 8px' }}
+          {/* Environment URLs Section */}
+          <Box sx={{ mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', textTransform: 'uppercase' }}>
+                Environment Endpoints
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
                 onClick={addUrlRow}
+                sx={{ textTransform: 'none', borderRadius: '6px', fontSize: '12px', py: 0.3 }}
               >
-                + Add URL
-              </button>
-            </div>
+                + Add Endpoint
+              </Button>
+            </Box>
 
             {urls.length === 0 ? (
-              <div style={{ fontSize: '12px', color: 'var(--muted)', fontStyle: 'italic', padding: '6px 0' }}>
-                No URLs added yet. Click "+ Add URL" to define dev, staging, or production endpoints.
-              </div>
+              <Typography variant="caption" sx={{ color: '#64748B', fontStyle: 'italic', display: 'block', py: 1 }}>
+                No URLs added yet. Click "+ Add Endpoint" to define dev, staging, or production endpoints.
+              </Typography>
             ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  maxHeight: '180px',
-                  overflowY: 'auto',
-                  paddingRight: '4px',
-                }}
-              >
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxHeight: 180, overflowY: 'auto', pr: 0.5 }}>
                 {urls.map((row, idx) => (
-                  <div key={idx} className="url-row">
-                    <input
-                      type="text"
-                      placeholder="Env (Dev/Stage/Prod)"
+                  <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TextField
+                      size="small"
+                      placeholder="Env (STG/QA/PROD)"
                       value={row.env}
                       onChange={(e) => handleUrlChange(idx, 'env', e.target.value)}
-                      style={{
-                        width: '130px',
-                        padding: '8px 10px',
-                        fontSize: '12px',
-                        border: '1.5px solid var(--border)',
-                        borderRadius: '6px',
-                        fontWeight: 600,
-                      }}
+                      sx={{ width: 130 }}
                     />
-                    <input
-                      type="text"
-                      placeholder="https://example.com"
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="https://app.myproject.com/stg"
                       value={row.url}
                       onChange={(e) => handleUrlChange(idx, 'url', e.target.value)}
-                      style={{
-                        flex: 1,
-                        padding: '8px 10px',
-                        fontSize: '12px',
-                        border: '1.5px solid var(--border)',
-                        borderRadius: '6px',
-                      }}
                     />
-                    <button
-                      type="button"
-                      style={{
-                        padding: '6px 10px',
-                        borderRadius: '6px',
-                        border: '1px solid var(--border)',
-                        color: 'var(--danger)',
-                        background: 'none',
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                      }}
-                      onClick={() => removeUrlRow(idx)}
-                      title="Remove URL"
-                    >
-                      ✕
-                    </button>
-                  </div>
+                    <IconButton size="small" onClick={() => removeUrlRow(idx)} sx={{ color: '#EF4444' }}>
+                      <DeleteIcon sx={{ fontSize: 18 }} />
+                    </IconButton>
+                  </Box>
                 ))}
-              </div>
+              </Box>
             )}
-          </div>
+          </Box>
+        </DialogContent>
 
-          <div className="modal-actions">
-            <button type="button" className="btn-sm btn-ghost" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-sm btn-teal">
-              Create Sub Project
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <DialogActions sx={{ p: 2.5 }}>
+          <Button onClick={onClose} variant="outlined" color="inherit" sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            startIcon={<AddIcon />}
+            sx={{
+              textTransform: 'none',
+              borderRadius: '8px',
+              fontWeight: 700,
+              px: 3,
+              backgroundColor: '#34b9cb',
+              '&:hover': { backgroundColor: '#028090' },
+            }}
+          >
+            Create Sub Project
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
