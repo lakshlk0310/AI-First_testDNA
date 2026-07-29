@@ -51,15 +51,15 @@ export const TestDNAIcon: React.FC<TestDNAIconProps> = ({
           variant === 'red'
             ? 'rgba(217, 4, 41, 0.08)'
             : variant === 'teal'
-            ? 'rgba(2, 128, 144, 0.08)'
-            : 'rgba(255, 255, 255, 0.12)'
+              ? 'rgba(2, 128, 144, 0.08)'
+              : 'rgba(255, 255, 255, 0.12)'
         }
         stroke={
           variant === 'red'
             ? 'rgba(217, 4, 41, 0.25)'
             : variant === 'teal'
-            ? 'rgba(2, 128, 144, 0.25)'
-            : 'rgba(255, 255, 255, 0.3)'
+              ? 'rgba(2, 128, 144, 0.25)'
+              : 'rgba(255, 255, 255, 0.3)'
         }
         strokeWidth="1.4"
         strokeLinejoin="round"
@@ -72,10 +72,10 @@ export const TestDNAIcon: React.FC<TestDNAIconProps> = ({
           variant === 'red'
             ? `url(#${gradId}_red)`
             : variant === 'teal'
-            ? `url(#${gradId}_teal)`
-            : variant === 'gradient'
-            ? `url(#${gradId}_grad)`
-            : '#FFFFFF'
+              ? `url(#${gradId}_teal)`
+              : variant === 'gradient'
+                ? `url(#${gradId}_grad)`
+                : '#FFFFFF'
         }
         strokeWidth="2.6"
         strokeLinecap="round"
@@ -88,10 +88,10 @@ export const TestDNAIcon: React.FC<TestDNAIconProps> = ({
           variant === 'red'
             ? `url(#${gradId}_red)`
             : variant === 'teal'
-            ? `url(#${gradId}_teal)`
-            : variant === 'gradient'
-            ? `url(#${gradId}_grad)`
-            : '#FFFFFF'
+              ? `url(#${gradId}_teal)`
+              : variant === 'gradient'
+                ? `url(#${gradId}_grad)`
+                : '#FFFFFF'
         }
         strokeWidth="2.6"
         strokeLinecap="round"
@@ -107,8 +107,8 @@ export const TestDNAIcon: React.FC<TestDNAIconProps> = ({
           variant === 'red'
             ? '#D90429'
             : variant === 'teal'
-            ? '#028090'
-            : '#FFFFFF'
+              ? '#028090'
+              : '#FFFFFF'
         }
         strokeWidth="1.6"
         strokeLinecap="round"
@@ -123,8 +123,8 @@ export const TestDNAIcon: React.FC<TestDNAIconProps> = ({
           variant === 'red'
             ? '#D90429'
             : variant === 'teal'
-            ? '#028090'
-            : '#FFFFFF'
+              ? '#028090'
+              : '#FFFFFF'
         }
         strokeWidth="1.6"
         strokeLinecap="round"
@@ -138,8 +138,8 @@ export const TestDNAIcon: React.FC<TestDNAIconProps> = ({
           variant === 'red'
             ? '#D90429'
             : variant === 'teal'
-            ? '#02C39A'
-            : '#FFFFFF'
+              ? '#02C39A'
+              : '#FFFFFF'
         }
       />
 
@@ -152,8 +152,8 @@ export const TestDNAIcon: React.FC<TestDNAIconProps> = ({
           variant === 'red'
             ? '#D90429'
             : variant === 'teal'
-            ? '#028090'
-            : '#FFFFFF'
+              ? '#028090'
+              : '#FFFFFF'
         }
       />
       <path

@@ -87,6 +87,23 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
     );
   });
 
+  const formatCreatedDate = (isoString?: string) => {
+    if (!isoString) return 'Recently';
+    try {
+      const d = new Date(isoString);
+      if (isNaN(d.getTime())) return isoString;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const day = d.getDate();
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${day} ${month} ${year} @${hours}:${minutes}`;
+    } catch {
+      return isoString;
+    }
+  };
+
   const getAccentColor = (index: number = 0) => {
     const palette = ['#34b9cb', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
     return palette[index % palette.length];
@@ -528,19 +545,24 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
                         </Tooltip>
                       </Box>
 
-                      {/* Launch Action Link */}
+                      {/* Created Date */}
                       <Box
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: 0.5,
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          color: '#028090',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          color: '#64748B',
+                          backgroundColor: '#F1F5F9',
+                          px: 1.2,
+                          py: 0.4,
+                          borderRadius: '12px',
+                          whiteSpace: 'nowrap',
                         }}
                       >
-                        <span>Launch Suite</span>
-                        <LaunchIcon sx={{ fontSize: 14 }} />
+                        <ScheduleIcon sx={{ fontSize: 13 }} />
+                        <span>Created {formatCreatedDate(sp.createdAt || parentProject?.createdAt)}</span>
                       </Box>
                     </Box>
                   </Box>
@@ -564,15 +586,17 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
           vertical: 'top',
           horizontal: 'right',
         }}
-        PaperProps={{
-          style: {
-            borderRadius: 20,
-            padding: '4px 6px',
-            boxShadow: '0 10px 25px rgba(15, 23, 42, 0.14)',
-            border: '1.5px solid #E2E8F0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: '20px',
+              padding: '4px 6px',
+              boxShadow: '0 10px 25px rgba(15, 23, 42, 0.14)',
+              border: '1.5px solid #E2E8F0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            },
           },
         }}
       >

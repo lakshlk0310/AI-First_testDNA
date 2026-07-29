@@ -24,8 +24,17 @@ interface EditProjectModalProps {
   onSaveProject: (updatedProject: Project) => void;
 }
 
-const CATEGORIES = ['General', 'Banking & Finance', 'Utilities & Energy', 'Healthcare', 'E-Commerce', 'SaaS Platform'];
-const ICON_OPTIONS = ['folder', 'account_balance', 'electric_bolt', 'medical_services', 'shopping_cart', 'cloud', 'terminal', 'code', 'hub'];
+const ICON_OPTIONS = [
+  'folder',
+  'account_balance',
+  'electric_bolt',
+  'medical_services',
+  'shopping_cart',
+  'cloud',
+  'terminal',
+  'code',
+  'hub',
+];
 
 export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   isOpen,
@@ -41,6 +50,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [category, setCategory] = useState('General');
   const [tagsInput, setTagsInput] = useState('');
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (project) {
@@ -64,6 +74,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
       return;
     }
 
+    setIsSaving(true);
     const tags = tagsInput
       .split(',')
       .map((t) => t.trim())
@@ -82,57 +93,102 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
     };
 
     onSaveProject(updated);
+    setIsSaving(false);
     onClose();
   };
 
+  const inputStyles = {
+    '& .MuiOutlinedInput-root': {
+      height: 44,
+      borderRadius: '10px',
+      fontSize: '14px',
+      backgroundColor: '#FFFFFF',
+      transition: 'all 0.2s ease-in-out',
+      '& fieldset': { borderColor: '#E5E7EB' },
+      '&:hover fieldset': { borderColor: '#CBD5E1' },
+      '&.Mui-focused fieldset': {
+        borderColor: '#3B82F6',
+        boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
+      },
+    },
+  };
+
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      maxWidth={false}
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            maxWidth: '720px',
+            width: '100%',
+            borderRadius: '16px',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)',
+            overflow: 'hidden',
+          },
+        },
+      }}
+    >
+      {/* Header */}
+      <DialogTitle
+        sx={{
+          m: 0,
+          p: '24px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #F1F5F9',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              borderRadius: '10px',
-              backgroundColor: 'rgba(2, 128, 144, 0.12)',
-              border: '1px solid rgba(2, 128, 144, 0.2)',
+              width: 44,
+              height: 44,
+              borderRadius: '12px',
+              backgroundColor: '#E0F2FE',
+              color: '#028090',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#028090',
+              flexShrink: 0,
             }}
           >
-            <EditNoteIcon />
+            <EditNoteIcon sx={{ fontSize: 26 }} />
           </Box>
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0B1740', lineHeight: 1.2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '20px', color: '#0F172A', lineHeight: 1.2 }}>
               Edit Project
             </Typography>
-            <Typography variant="caption" sx={{ color: '#64708A' }}>
-              Update details for {project.name}
+            <Typography variant="caption" sx={{ color: '#64748B', fontSize: '13px', display: 'block', mt: 0.3 }}>
+              Update workspace settings for {project.name}
             </Typography>
           </Box>
         </Box>
-        <IconButton onClick={onClose} aria-label="close">
+        <IconButton onClick={onClose} aria-label="close" sx={{ color: '#64748B' }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
       <form onSubmit={handleSubmit}>
-        <DialogContent dividers sx={{ py: 2.5 }}>
+        <DialogContent sx={{ p: '28px 32px' }}>
           {error ? (
-            <Alert severity="error" sx={{ mb: 2, borderRadius: '8px' }}>
+            <Alert severity="error" sx={{ mb: 3, borderRadius: '10px' }}>
               {error}
             </Alert>
           ) : null}
 
-          <Box sx={{ mb: 2.5 }}>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
-              Project Name <span style={{ color: 'red' }}>*</span>
+          {/* Project Name */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
+              Project Name <span style={{ color: '#EF4444' }}>*</span>
             </Typography>
             <TextField
               fullWidth
               size="small"
+              autoFocus
               placeholder="e.g. Enterprise Banking Platform"
               value={name}
               onChange={(e) => {
@@ -141,12 +197,14 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               }}
               required
               variant="outlined"
+              sx={inputStyles}
             />
           </Box>
 
-          <Box sx={{ mb: 2.5 }}>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
-              Project Base URL (Optional)
+          {/* Project Base URL */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
+              Project Base URL <Typography component="span" sx={{ color: '#94A3B8', fontSize: '12px' }}>(Optional)</Typography>
             </Typography>
             <TextField
               fullWidth
@@ -156,12 +214,14 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
               variant="outlined"
+              sx={inputStyles}
             />
           </Box>
 
-          <Box sx={{ mb: 2.5 }}>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
-              Project Description (Optional)
+          {/* Project Description */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
+              Project Description <Typography component="span" sx={{ color: '#94A3B8', fontSize: '12px' }}>(Optional)</Typography>
             </Typography>
             <TextField
               fullWidth
@@ -171,30 +231,68 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  backgroundColor: '#FFFFFF',
+                  minHeight: '80px',
+                  transition: 'all 0.2s ease-in-out',
+                  '& fieldset': { borderColor: '#E5E7EB' },
+                  '&:hover fieldset': { borderColor: '#CBD5E1' },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#3B82F6',
+                    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
+                  },
+                },
+              }}
             />
           </Box>
 
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-            <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
+          {/* Status & Icon */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2.5 }}>
+            {/* <Box>
+              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
                 Status
               </Typography>
               <FormControl fullWidth size="small">
-                <Select value={status} onChange={(e) => setStatus(e.target.value as string)}>
+                <Select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as string)}
+                  sx={{
+                    height: 44,
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    '& fieldset': { borderColor: '#E5E7EB' },
+                    '&:hover fieldset': { borderColor: '#CBD5E1' },
+                    '&.Mui-focused fieldset': { borderColor: '#3B82F6' },
+                  }}
+                >
                   <MenuItem value="Ongoing">Ongoing</MenuItem>
                   <MenuItem value="Pending BRD">Pending BRD</MenuItem>
                   <MenuItem value="In Progress">In Progress</MenuItem>
                   <MenuItem value="Completed">Completed</MenuItem>
                 </Select>
               </FormControl>
-            </Box>
+            </Box> */}
 
-            <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
+            {/* <Box>
+              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
                 Project Icon
               </Typography>
               <FormControl fullWidth size="small">
-                <Select value={icon} onChange={(e) => setIcon(e.target.value as string)}>
+                <Select
+                  value={icon}
+                  onChange={(e) => setIcon(e.target.value as string)}
+                  sx={{
+                    height: 44,
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    '& fieldset': { borderColor: '#E5E7EB' },
+                    '&:hover fieldset': { borderColor: '#CBD5E1' },
+                    '&.Mui-focused fieldset': { borderColor: '#3B82F6' },
+                  }}
+                >
                   {ICON_OPTIONS.map((ic) => (
                     <MenuItem key={ic} value={ic}>
                       {ic}
@@ -202,26 +300,54 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   ))}
                 </Select>
               </FormControl>
-            </Box>
+            </Box> */}
           </Box>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2, pt: 1 }}>
-          <Button onClick={onClose} variant="outlined" color="inherit" sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}>
+        {/* Footer Actions */}
+        <DialogActions sx={{ p: '20px 32px', borderTop: '1px solid #F1F5F9', gap: 1.5 }}>
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            color="inherit"
+            sx={{
+              textTransform: 'none',
+              borderRadius: '10px',
+              height: 42,
+              px: 2.5,
+              fontWeight: 600,
+              fontSize: '14px',
+              borderColor: '#CBD5E1',
+              color: '#334155',
+            }}
+          >
             Cancel
           </Button>
           <Button
             type="submit"
             variant="contained"
+            disabled={!name.trim() || isSaving}
             sx={{
               textTransform: 'none',
-              borderRadius: '8px',
-              fontWeight: 700,
+              borderRadius: '10px',
+              height: 42,
+              px: 3,
+              fontWeight: 600,
+              fontSize: '14px',
               backgroundColor: '#34b9cb',
-              '&:hover': { backgroundColor: '#028090' },
+              boxShadow: '0 2px 8px rgba(52, 185, 203, 0.3)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: '#028090',
+                boxShadow: '0 4px 12px rgba(2, 128, 144, 0.35)',
+              },
+              '&.Mui-disabled': {
+                backgroundColor: '#E2E8F0',
+                color: '#94A3B8',
+              },
             }}
           >
-            Save Changes
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
         </DialogActions>
       </form>

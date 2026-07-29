@@ -68,31 +68,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       {/* Left Section: Back Button + Brand Logo & Title */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
-        {showBackButton && (
-          <Tooltip title="Back to Project Workspace">
-            <IconButton
-              onClick={onBack}
-              size="small"
-              sx={{
-                width: 36,
-                height: 36,
-                borderRadius: '10px',
-                backgroundColor: '#F8FAFC',
-                color: '#475569',
-                border: '1.5px solid #E2E8F0',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  backgroundColor: '#E0F2FE',
-                  color: '#028090',
-                  borderColor: 'rgba(52, 185, 203, 0.5)',
-                },
-              }}
-              aria-label="Back"
-            >
-              <ArrowBackIcon sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Tooltip>
-        )}
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
           {/* Restored Old Stacked Layers Logo Icon */}
@@ -125,6 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              fontFamily: 'inherit'
             }}
           >
             {title}

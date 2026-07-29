@@ -29,11 +29,8 @@ import {
   Delete as DeleteIcon,
   FolderOpen as FolderOpenIcon,
   Warning as WarningIcon,
-  Link as LinkIcon,
+  Language as LanguageIcon,
   Schedule as ScheduleIcon,
-  AutoStories as AutoStoriesIcon,
-  Description as DescriptionIcon,
-  Code as CodeIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
 
@@ -119,15 +116,15 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
   };
 
   const getStatusBadgeStyle = (status?: string) => {
-    if (status === 'Ongoing') return { bg: '#FEF3C7', color: '#B45309', border: '#FDE68A' };
-    if (status === 'Pending BRD') return { bg: '#FEE2E2', color: '#B91C1C', border: '#FCA5A5' };
-    if (status === 'In Progress') return { bg: '#DBEAFE', color: '#1D4ED8', border: '#BFDBFE' };
-    if (status === 'Completed') return { bg: '#D1FAE5', color: '#047857', border: '#A7F3D0' };
+    if (status === 'Ongoing') return { bg: '#FEF3C7', color: '#D97706', border: '#FDE68A' };
+    if (status === 'Pending BRD') return { bg: '#FEE2E2', color: '#DC2626', border: '#FCA5A5' };
+    if (status === 'In Progress') return { bg: '#DBEAFE', color: '#2563EB', border: '#BFDBFE' };
+    if (status === 'Completed') return { bg: '#D1FAE5', color: '#059669', border: '#A7F3D0' };
     return { bg: '#F1F5F9', color: '#475569', border: '#E2E8F0' };
   };
 
   return (
-    <Box sx={{ padding: '24px 28px', maxWidth: '1440px', margin: '0 auto' }}>
+    <Box sx={{ padding: { xs: '20px', md: '28px 36px' }, maxWidth: '1440px', margin: '0 auto' }}>
       {/* Top Controls Toolbar */}
       <Box
         sx={{
@@ -137,14 +134,14 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           gap: 2,
           flexWrap: 'wrap',
           backgroundColor: '#ffffff',
-          padding: '12px 18px',
-          borderRadius: '12px',
-          border: '1.5px solid #E2E8F0',
-          boxShadow: '0 2px 6px rgba(15, 23, 42, 0.03)',
-          mb: 3,
+          padding: '14px 20px',
+          borderRadius: '14px',
+          border: '1px solid #E5E7EB',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+          mb: 3.5,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', flex: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', flex: 1 }}>
           {/* Search Box */}
           <TextField
             size="small"
@@ -155,8 +152,19 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
               minWidth: 280,
               maxWidth: 420,
               flex: 1,
-              backgroundColor: '#F8FAFC',
-              borderRadius: '8px',
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                borderRadius: '10px',
+                backgroundColor: '#F9FAFB',
+                fontSize: '14px',
+                transition: 'all 0.2s ease-in-out',
+                '& fieldset': { borderColor: '#E5E7EB' },
+                '&:hover fieldset': { borderColor: '#CBD5E1' },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#3B82F6',
+                  boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
+                },
+              },
             }}
             slotProps={{
               input: {
@@ -177,16 +185,22 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           />
 
           {/* Status Filter */}
-          <FormControl size="small" sx={{ minWidth: 160 }}>
+          <FormControl size="small" sx={{ minWidth: 170 }}>
             <Select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as string)}
               sx={{
-                backgroundColor: '#F8FAFC',
-                borderRadius: '8px',
+                height: 44,
+                borderRadius: '10px',
+                backgroundColor: '#F9FAFB',
                 fontWeight: 600,
                 fontSize: '13px',
                 color: '#334155',
+                '& fieldset': { borderColor: '#E5E7EB' },
+                '&:hover fieldset': { borderColor: '#CBD5E1' },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#3B82F6',
+                },
               }}
               startAdornment={
                 <InputAdornment position="start">
@@ -204,29 +218,37 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
         </Box>
 
         {/* View Switcher & Add Button */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-          <Box sx={{ display: 'flex', backgroundColor: '#F1F5F9', borderRadius: '8px', padding: '3px', gap: '2px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', backgroundColor: '#F1F5F9', borderRadius: '10px', padding: '4px', gap: '3px' }}>
             <IconButton
               size="small"
               onClick={() => setViewMode('grid')}
               sx={{
-                borderRadius: '6px',
+                borderRadius: '7px',
+                width: 36,
+                height: 36,
                 backgroundColor: viewMode === 'grid' ? '#ffffff' : 'transparent',
                 color: viewMode === 'grid' ? '#028090' : '#64748B',
+                boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
+                transition: 'all 0.2s ease-in-out',
               }}
             >
-              <GridViewIcon sx={{ fontSize: 18 }} />
+              <GridViewIcon sx={{ fontSize: 19 }} />
             </IconButton>
             <IconButton
               size="small"
               onClick={() => setViewMode('list')}
               sx={{
-                borderRadius: '6px',
+                borderRadius: '7px',
+                width: 36,
+                height: 36,
                 backgroundColor: viewMode === 'list' ? '#ffffff' : 'transparent',
                 color: viewMode === 'list' ? '#028090' : '#64748B',
+                boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
+                transition: 'all 0.2s ease-in-out',
               }}
             >
-              <FormatListBulletedIcon sx={{ fontSize: 18 }} />
+              <FormatListBulletedIcon sx={{ fontSize: 19 }} />
             </IconButton>
           </Box>
 
@@ -236,14 +258,17 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
             onClick={onCreateProjectClick}
             sx={{
               textTransform: 'none',
-              borderRadius: '8px',
-              fontWeight: 700,
-              px: 2.5,
-              py: 1,
+              height: 44,
+              borderRadius: '10px',
+              fontWeight: 600,
+              fontSize: '14px',
+              px: 2.8,
               backgroundColor: '#34b9cb',
-              boxShadow: '0 2px 8px rgba(52, 185, 203, 0.25)',
+              boxShadow: '0 2px 8px rgba(52, 185, 203, 0.3)',
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
                 backgroundColor: '#028090',
+                boxShadow: '0 4px 12px rgba(2, 128, 144, 0.35)',
               },
             }}
           >
@@ -257,32 +282,32 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
         <Box
           sx={{
             textAlign: 'center',
-            py: 7,
-            px: 2,
+            py: 8,
+            px: 3,
             backgroundColor: '#ffffff',
             borderRadius: '16px',
-            border: '2px dashed #CBD5E1',
+            border: '2px dashed #E2E8F0',
           }}
         >
           <Box
             sx={{
-              width: 54,
-              height: 54,
+              width: 56,
+              height: 56,
               borderRadius: '50%',
-              backgroundColor: '#FEF2F2',
-              color: '#34b9cb',
+              backgroundColor: '#E0F2FE',
+              color: '#028090',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 16px',
             }}
           >
-            <FolderOpenIcon sx={{ fontSize: 30 }} />
+            <FolderOpenIcon sx={{ fontSize: 28 }} />
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#0F172A', mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '18px', color: '#0F172A', mb: 1 }}>
             No Projects Found
           </Typography>
-          <Typography variant="body2" sx={{ color: '#64748B', maxWidth: 440, margin: '0 auto 20px', lineHeight: 1.5 }}>
+          <Typography variant="body2" sx={{ color: '#64748B', fontSize: '14px', maxWidth: 440, margin: '0 auto 24px', lineHeight: 1.5 }}>
             {searchQuery || statusFilter !== 'All'
               ? 'No projects match your current filters. Try resetting your search parameters.'
               : 'You have not created any project workspace yet. Click below to add your first project!'}
@@ -294,7 +319,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                 setSearchQuery('');
                 setStatusFilter('All');
               }}
-              sx={{ textTransform: 'none', borderRadius: '8px' }}
+              sx={{ textTransform: 'none', borderRadius: '10px', height: 40, px: 2.5, fontWeight: 600, borderColor: '#CBD5E1', color: '#334155' }}
             >
               Reset Filters
             </Button>
@@ -303,20 +328,20 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
               variant="contained"
               startIcon={<AddIcon />}
               onClick={onCreateProjectClick}
-              sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 700, backgroundColor: '#34b9cb' }}
+              sx={{ textTransform: 'none', borderRadius: '10px', height: 42, fontWeight: 600, px: 3, backgroundColor: '#34b9cb', '&:hover': { backgroundColor: '#028090' } }}
             >
               Add new project
             </Button>
           )}
         </Box>
       ) : (
-        /* Unique Cards Layout */
+        /* Cards Layout */
         !loading && (
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: viewMode === 'list' ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))',
-              gap: '22px',
+              gridTemplateColumns: viewMode === 'list' ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: '24px',
             }}
           >
             {filteredProjects.map((proj, idx) => {
@@ -330,18 +355,19 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                   sx={{
                     position: 'relative',
                     borderRadius: '16px',
-                    border: '1.5px solid #E2E8F0',
-                    boxShadow: '0 4px 14px rgba(15, 23, 42, 0.04)',
+                    border: '1.5px solid #E5E7EB',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
                     cursor: 'pointer',
-                    transition: 'all 0.25s ease',
+                    transition: 'all 0.22s ease-in-out',
                     display: 'flex',
                     flexDirection: 'column',
                     height: '100%',
                     overflow: 'hidden',
+                    backgroundColor: '#ffffff',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 16px 36px rgba(15, 23, 42, 0.1)',
-                      borderColor: 'rgba(52, 185, 203, 0.5)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                      borderColor: '#34b9cb',
                     },
                   }}
                 >
@@ -355,7 +381,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                   />
 
                   <Box sx={{ p: 2.5, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    {/* Top Header Row */}
+                    {/* Header Row */}
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
                         <Box
@@ -368,7 +394,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                             justifyContent: 'center',
                             backgroundColor: `${accentColor}15`,
                             color: accentColor,
-                            border: `1.5px solid ${accentColor}30`,
+                            border: `1px solid ${accentColor}30`,
                             flexShrink: 0,
                           }}
                         >
@@ -381,9 +407,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                           <Typography
                             variant="subtitle1"
                             sx={{
-                              fontWeight: 800,
+                              fontWeight: 600,
+                              fontSize: '16px',
                               color: '#0F172A',
-                              lineHeight: 1.2,
+                              lineHeight: 1.3,
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -392,14 +419,14 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                           >
                             {proj.name}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#028090', fontWeight: 700, display: 'block', mt: 0.2 }}>
+                          <Typography variant="caption" sx={{ color: '#028090', fontWeight: 500, fontSize: '13px', display: 'block', mt: 0.2 }}>
                             {proj.category || 'General Workspace'}
                           </Typography>
                         </Box>
                       </Box>
 
-                      {/* Status Badge & Three-Dot Menu */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                      {/* Status Badge & Menu */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                         <Chip
                           label={
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
@@ -412,14 +439,15 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                             backgroundColor: badgeStyle.bg,
                             color: badgeStyle.color,
                             border: `1px solid ${badgeStyle.border}`,
-                            fontWeight: 700,
-                            fontSize: '11px',
+                            fontWeight: 600,
+                            fontSize: '12px',
                             height: 24,
+                            borderRadius: '16px',
                           }}
                         />
 
                         <IconButton size="small" onClick={(e) => handleOpenMenu(e, proj)}>
-                          <MoreVertIcon sx={{ color: '#64748B', fontSize: 20 }} />
+                          <MoreVertIcon sx={{ color: '#64748B', fontSize: 19 }} />
                         </IconButton>
                       </Box>
                     </Box>
@@ -429,8 +457,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                       variant="body2"
                       sx={{
                         color: '#475569',
+                        fontSize: '14px',
                         mt: 1.5,
-                        mb: 2,
+                        mb: 1.5,
                         lineHeight: 1.5,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -442,30 +471,42 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                       {proj.desc || 'No project description provided.'}
                     </Typography>
 
-                    {/* Base URL */}
+                    {/* Base URL (Globe Icon + Clickable Link) */}
                     {proj.baseUrl ? (
                       <Box
+                        component="a"
+                        href={proj.baseUrl.startsWith('http') ? proj.baseUrl : `https://${proj.baseUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         sx={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 0.6,
+                          gap: 0.8,
                           backgroundColor: '#F0FDF4',
                           border: '1px solid #DCFCE7',
-                          px: 1,
-                          py: 0.3,
+                          px: 1.2,
+                          py: 0.4,
                           borderRadius: '8px',
                           color: '#166534',
-                          fontSize: '11.5px',
-                          fontFamily: 'monospace',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          textDecoration: 'none',
                           mb: 1.5,
                           maxWidth: '100%',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
+                          width: 'fit-content',
+                          transition: 'all 0.2s ease-in-out',
+                          '&:hover': {
+                            backgroundColor: '#DCFCE7',
+                            borderColor: '#86EFAC',
+                            color: '#15803D',
+                          },
                         }}
                       >
-                        <LinkIcon sx={{ fontSize: 14, color: '#028090' }} />
-                        <span>{proj.baseUrl}</span>
+                        <LanguageIcon sx={{ fontSize: 15, color: '#028090' }} />
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {proj.baseUrl}
+                        </span>
                       </Box>
                     ) : null}
 
@@ -479,92 +520,25 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         gap: 1,
-                        flexWrap: 'wrap',
                       }}
                     >
-                      {/* Metrics Pills */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Tooltip title="User Stories">
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              backgroundColor: '#F8FAFC',
-                              border: '1px solid #E2E8F0',
-                              px: 1.2,
-                              py: 0.4,
-                              borderRadius: '20px',
-                              fontSize: '12.5px',
-                              fontWeight: 700,
-                              color: '#1E293B',
-                            }}
-                          >
-                            <AutoStoriesIcon sx={{ fontSize: 15, color: '#028090' }} />
-                            <span>{proj.userStoriesCount ?? (proj.subProjects?.length ? proj.subProjects.length * 5 : 0)}</span>
-                          </Box>
-                        </Tooltip>
-
-                        <Tooltip title="Test Cases">
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              backgroundColor: '#F8FAFC',
-                              border: '1px solid #E2E8F0',
-                              px: 1.2,
-                              py: 0.4,
-                              borderRadius: '20px',
-                              fontSize: '12.5px',
-                              fontWeight: 700,
-                              color: '#1E293B',
-                            }}
-                          >
-                            <DescriptionIcon sx={{ fontSize: 15, color: '#028090' }} />
-                            <span>{proj.testCasesCount ?? 0}</span>
-                          </Box>
-                        </Tooltip>
-
-                        <Tooltip title="Scripts">
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              backgroundColor: '#F8FAFC',
-                              border: '1px solid #E2E8F0',
-                              px: 1.2,
-                              py: 0.4,
-                              borderRadius: '20px',
-                              fontSize: '12.5px',
-                              fontWeight: 700,
-                              color: '#1E293B',
-                            }}
-                          >
-                            <CodeIcon sx={{ fontSize: 15, color: '#028090' }} />
-                            <span>{proj.scriptsCount ?? 0}</span>
-                          </Box>
-                        </Tooltip>
-                      </Box>
-
                       {/* Created Date */}
                       <Box
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 0.5,
-                          fontSize: '11px',
-                          fontWeight: 600,
+                          gap: 0.6,
+                          fontSize: '12px',
+                          fontWeight: 500,
                           color: '#64748B',
-                          backgroundColor: '#F1F5F9',
+                          backgroundColor: '#F8FAFC',
                           px: 1.2,
                           py: 0.4,
-                          borderRadius: '12px',
-                          whiteSpace: 'nowrap',
+                          borderRadius: '8px',
+                          border: '1px solid #F1F5F9',
                         }}
                       >
-                        <ScheduleIcon sx={{ fontSize: 13 }} />
+                        <ScheduleIcon sx={{ fontSize: 14 }} />
                         <span>Created {formatCreatedDate(proj.createdAt)}</span>
                       </Box>
                     </Box>
@@ -589,15 +563,17 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           vertical: 'top',
           horizontal: 'right',
         }}
-        PaperProps={{
-          style: {
-            borderRadius: 20,
-            padding: '4px 6px',
-            boxShadow: '0 10px 25px rgba(15, 23, 42, 0.14)',
-            border: '1.5px solid #E2E8F0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: '16px',
+              padding: '4px 6px',
+              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)',
+              border: '1px solid #E5E7EB',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            },
           },
         }}
       >
@@ -638,8 +614,18 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
 
       {/* Delete Confirmation Modal */}
       {projectToDelete ? (
-        <Dialog open={Boolean(projectToDelete)} onClose={() => setProjectToDelete(null)} maxWidth="xs" fullWidth>
-          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2 }}>
+        <Dialog
+          open={Boolean(projectToDelete)}
+          onClose={() => setProjectToDelete(null)}
+          maxWidth="xs"
+          fullWidth
+          slotProps={{
+            paper: {
+              sx: { borderRadius: '16px', p: 1 },
+            },
+          }}
+        >
+          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2.5 }}>
             <Box
               sx={{
                 width: 44,
@@ -656,27 +642,27 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
               <WarningIcon sx={{ fontSize: 24 }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: '#0B1740', lineHeight: 1.2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '18px', color: '#0F172A', lineHeight: 1.2 }}>
                 Delete Project
               </Typography>
-              <Typography variant="caption" sx={{ color: '#64708A' }}>
+              <Typography variant="caption" sx={{ color: '#64748B', fontSize: '12px' }}>
                 This action cannot be undone
               </Typography>
             </Box>
           </DialogTitle>
 
-          <DialogContent sx={{ p: 2, pt: 0 }}>
-            <Typography variant="body2" sx={{ color: '#475569', lineHeight: 1.5 }}>
-              Are you sure you want to delete <strong style={{ color: '#0B1740' }}>{projectToDelete.name}</strong>? All associated sub-projects and test data will be permanently removed.
+          <DialogContent sx={{ px: 2.5, py: 1 }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontSize: '14px', lineHeight: 1.5 }}>
+              Are you sure you want to delete <strong style={{ color: '#0F172A' }}>{projectToDelete.name}</strong>? All associated sub-projects and test data will be permanently removed.
             </Typography>
           </DialogContent>
 
-          <DialogActions sx={{ p: 2 }}>
+          <DialogActions sx={{ p: 2.5 }}>
             <Button
               onClick={() => setProjectToDelete(null)}
               variant="outlined"
               color="inherit"
-              sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}
+              sx={{ textTransform: 'none', borderRadius: '10px', height: 40, px: 2.5, fontWeight: 600, borderColor: '#CBD5E1' }}
             >
               Cancel
             </Button>
@@ -691,8 +677,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
               color="error"
               sx={{
                 textTransform: 'none',
-                borderRadius: '8px',
-                fontWeight: 700,
+                borderRadius: '10px',
+                height: 40,
+                fontWeight: 600,
                 px: 2.5,
                 backgroundColor: '#EF4444',
                 boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
