@@ -1,4 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Tooltip,
+} from '@mui/material';
+import {
+  ArrowBack as ArrowBackIcon,
+  Logout as LogoutIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+} from '@mui/icons-material';
 import type { UserProfile } from '../../types/project';
 
 interface NavbarProps {
@@ -16,53 +33,75 @@ export const Navbar: React.FC<NavbarProps> = ({
   showBackButton = false,
   onBack,
 }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSignOutClick = () => {
+    handleCloseMenu();
+    onSignOut?.();
+  };
 
   return (
-    <nav className="topbar">
-      {/* Left section with optional Back button & Brand Logo */}
-      <div className="topbar-brand">
+    <Box
+      component="nav"
+      sx={{
+        height: '64px',
+        backgroundColor: '#ffffff',
+        borderBottom: '1.5px solid #E2E8F0',
+        padding: '0 28px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1100,
+        boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+      }}
+    >
+      {/* Left Section: Back Button + Brand Logo & Title */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
         {showBackButton && (
-          <button
-            className="btn-sm btn-ghost"
-            onClick={onBack}
-            style={{
-              padding: '6px',
-              borderRadius: '50%',
-              width: '34px',
-              height: '34px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-            title="Back to Project Workspace"
-            aria-label="Back"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
+          <Tooltip title="Back to Project Workspace">
+            <IconButton
+              onClick={onBack}
+              size="small"
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: '10px',
+                backgroundColor: '#F8FAFC',
+                color: '#475569',
+                border: '1.5px solid #E2E8F0',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: '#E0F2FE',
+                  color: '#028090',
+                  borderColor: 'rgba(52, 185, 203, 0.5)',
+                },
+              }}
+              aria-label="Back"
+            >
+              <ArrowBackIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-          <div
-            style={{
-              width: '32px',
-              height: '32px',
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+          {/* Restored Old Stacked Layers Logo Icon */}
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
               borderRadius: '8px',
-              background: 'var(--teal)',
+              backgroundColor: '#028090',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -74,58 +113,113 @@ export const Navbar: React.FC<NavbarProps> = ({
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
             </svg>
-          </div>
-          <h2 className="topbar-title">{title}</h2>
-        </div>
-      </div>
+          </Box>
 
-      {/* Right section with User Profile dropdown */}
-      <div className="topbar-actions">
-        <div className="profile-dropdown-container" ref={dropdownRef}>
-          <button
-            className="profile-btn"
-            onClick={() => setDropdownOpen((prev) => !prev)}
-            aria-expanded={dropdownOpen}
-            title={user.name}
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 800,
+              color: '#0F172A',
+              fontSize: '17px',
+              letterSpacing: '-0.3px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
-            <div className="avatar-sm">{user.initials}</div>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
+            {title}
+          </Typography>
+        </Box>
+      </Box>
 
-          {dropdownOpen && (
-            <div className="profile-dropdown-menu">
-              <div className="dropdown-header">
-                <strong>{user.name}</strong>
-                <span>{user.role}</span>
-              </div>
-              <hr />
-              <a
-                href="#logout"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setDropdownOpen(false);
-                  onSignOut?.();
-                }}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  style={{ marginRight: '8px' }}
-                >
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-                </svg>
-                Sign Out
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
-    </nav>
+      {/* Right Section: User Profile Dropdown */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          onClick={handleOpenMenu}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.2,
+            padding: '4px 10px 4px 6px',
+            borderRadius: '24px',
+            backgroundColor: '#F8FAFC',
+            border: '1.5px solid #E2E8F0',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              backgroundColor: '#F1F5F9',
+              borderColor: '#CBD5E1',
+            },
+          }}
+          title={user.name}
+        >
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              fontSize: '13px',
+              fontWeight: 700,
+              backgroundColor: '#34b9cb',
+              color: '#ffffff',
+            }}
+          >
+            {user.initials}
+          </Avatar>
+
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F172A', fontSize: '13px', lineHeight: 1.1 }}>
+              {user.name}
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#64748B', fontSize: '11px', display: 'block' }}>
+              {user.role}
+            </Typography>
+          </Box>
+
+          <KeyboardArrowDownIcon sx={{ fontSize: 18, color: '#64748B' }} />
+        </Box>
+
+        {/* User Profile Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleCloseMenu}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          PaperProps={{
+            style: {
+              borderRadius: 14,
+              minWidth: 200,
+              padding: '4px 0',
+              boxShadow: '0 10px 25px rgba(15, 23, 42, 0.12)',
+              border: '1.5px solid #E2E8F0',
+            },
+          }}
+        >
+          <Box sx={{ px: 2, py: 1.5 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0F172A' }}>
+              {user.name}
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#64748B' }}>
+              {user.email || user.role}
+            </Typography>
+          </Box>
+
+          <Divider sx={{ my: 0.5 }} />
+
+          <MenuItem onClick={handleSignOutClick} sx={{ py: 1, color: '#EF4444', fontWeight: 600 }}>
+            <ListItemIcon sx={{ color: '#EF4444', minWidth: 32 }}>
+              <LogoutIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Sign Out" primaryTypographyProps={{ fontSize: '13.5px', fontWeight: 600 }} />
+          </MenuItem>
+        </Menu>
+      </Box>
+    </Box>
   );
 };

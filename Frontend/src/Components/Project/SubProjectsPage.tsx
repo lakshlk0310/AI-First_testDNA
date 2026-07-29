@@ -26,7 +26,6 @@ import {
   Delete as DeleteIcon,
   FolderOpen as FolderOpenIcon,
   Warning as WarningIcon,
-  Link as LinkIcon,
   Schedule as ScheduleIcon,
   AutoStories as AutoStoriesIcon,
   Description as DescriptionIcon,
@@ -98,25 +97,31 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
       {/* Top Header & Breadcrumb Bar */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={onBackToProjects}
-            sx={{
-              textTransform: 'none',
-              borderRadius: '10px',
-              fontWeight: 700,
-              color: '#475569',
-              borderColor: '#CBD5E1',
-              backgroundColor: '#ffffff',
-              '&:hover': {
-                backgroundColor: '#F8FAFC',
-                borderColor: '#94A3B8',
-              },
-            }}
-          >
-            Back to Projects
-          </Button>
+          {/* Back Icon Button (Same design as Navbar Back Button) */}
+          <Tooltip title="Back to Project Workspace">
+            <IconButton
+              onClick={onBackToProjects}
+              size="small"
+              sx={{
+                width: 38,
+                height: 38,
+                borderRadius: '10px',
+                backgroundColor: '#ffffff',
+                color: '#475569',
+                border: '1.5px solid #E2E8F0',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: '#E0F2FE',
+                  color: '#028090',
+                  borderColor: 'rgba(52, 185, 203, 0.5)',
+                },
+              }}
+              aria-label="Back"
+            >
+              <ArrowBackIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
 
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
