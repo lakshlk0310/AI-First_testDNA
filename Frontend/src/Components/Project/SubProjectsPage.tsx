@@ -27,11 +27,11 @@ import {
   FolderOpen as FolderOpenIcon,
   Warning as WarningIcon,
   Schedule as ScheduleIcon,
+  Language as LanguageIcon,
+  Close as CloseIcon,
   AutoStories as AutoStoriesIcon,
   Description as DescriptionIcon,
   Code as CodeIcon,
-  Close as CloseIcon,
-  Launch as LaunchIcon,
 } from '@mui/icons-material';
 
 import type { Project, SubProject } from '../../types/project';
@@ -110,54 +110,55 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
   };
 
   return (
-    <Box sx={{ padding: '24px 28px', maxWidth: '1440px', margin: '0 auto' }}>
+    <Box sx={{ padding: { xs: '20px', md: '28px 36px' }, maxWidth: '1440px', margin: '0 auto' }}>
       {/* Top Header & Breadcrumb Bar */}
-      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          {/* Back Icon Button (Same design as Navbar Back Button) */}
+      <Box sx={{ mb: 3.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Back Icon Button */}
           <Tooltip title="Back to Project Workspace">
             <IconButton
               onClick={onBackToProjects}
               size="small"
               sx={{
-                width: 38,
-                height: 38,
+                width: 40,
+                height: 40,
                 borderRadius: '10px',
                 backgroundColor: '#ffffff',
                 color: '#475569',
-                border: '1.5px solid #E2E8F0',
+                border: '1px solid #E5E7EB',
                 boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
-                transition: 'all 0.2s ease',
+                transition: 'all 0.2s ease-in-out',
                 '&:hover': {
                   backgroundColor: '#E0F2FE',
                   color: '#028090',
-                  borderColor: 'rgba(52, 185, 203, 0.5)',
+                  borderColor: '#34b9cb',
                 },
               }}
               aria-label="Back"
             >
-              <ArrowBackIcon sx={{ fontSize: 18 }} />
+              <ArrowBackIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Tooltip>
 
           <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#0F172A', letterSpacing: '-0.3px', margin: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+              <Typography variant="h5" sx={{ fontWeight: 600, fontSize: '20px', color: '#0F172A', lineHeight: 1.2, margin: 0 }}>
                 {parentProject.name}
               </Typography>
               <Chip
                 label={`${(parentProject.subProjects || []).length} Sub-Projects`}
                 size="small"
                 sx={{
-                  backgroundColor: 'rgba(2, 128, 144, 0.1)',
+                  backgroundColor: '#E0F2FE',
                   color: '#028090',
-                  fontWeight: 700,
-                  fontSize: '11.5px',
+                  fontWeight: 600,
+                  fontSize: '12px',
                   height: 24,
+                  borderRadius: '16px',
                 }}
               />
             </Box>
-            <Typography variant="caption" sx={{ color: '#64748B' }}>
+            <Typography variant="caption" sx={{ color: '#64748B', fontSize: '13px', display: 'block', mt: 0.3 }}>
               Select a sub-project workspace application to enter the testing suite
             </Typography>
           </Box>
@@ -173,15 +174,15 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
           gap: 2,
           flexWrap: 'wrap',
           backgroundColor: '#ffffff',
-          padding: '12px 18px',
-          borderRadius: '12px',
-          border: '1.5px solid #E2E8F0',
-          boxShadow: '0 2px 6px rgba(15, 23, 42, 0.03)',
-          mb: 3,
+          padding: '14px 20px',
+          borderRadius: '14px',
+          border: '1px solid #E5E7EB',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+          mb: 3.5,
         }}
       >
         {/* Search Input */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 260, maxWidth: 420 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, minWidth: 280, maxWidth: 420 }}>
           <TextField
             fullWidth
             size="small"
@@ -189,8 +190,19 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             sx={{
-              backgroundColor: '#F8FAFC',
-              borderRadius: '8px',
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                borderRadius: '10px',
+                backgroundColor: '#F9FAFB',
+                fontSize: '14px',
+                transition: 'all 0.2s ease-in-out',
+                '& fieldset': { borderColor: '#E5E7EB' },
+                '&:hover fieldset': { borderColor: '#CBD5E1' },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#3B82F6',
+                  boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
+                },
+              },
             }}
             slotProps={{
               input: {
@@ -212,29 +224,37 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
         </Box>
 
         {/* View Switcher & Add Button */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-          <Box sx={{ display: 'flex', backgroundColor: '#F1F5F9', borderRadius: '8px', padding: '3px', gap: '2px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', backgroundColor: '#F1F5F9', borderRadius: '10px', padding: '4px', gap: '3px' }}>
             <IconButton
               size="small"
               onClick={() => setViewMode('grid')}
               sx={{
-                borderRadius: '6px',
+                borderRadius: '7px',
+                width: 36,
+                height: 36,
                 backgroundColor: viewMode === 'grid' ? '#ffffff' : 'transparent',
                 color: viewMode === 'grid' ? '#028090' : '#64748B',
+                boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
+                transition: 'all 0.2s ease-in-out',
               }}
             >
-              <GridViewIcon sx={{ fontSize: 18 }} />
+              <GridViewIcon sx={{ fontSize: 19 }} />
             </IconButton>
             <IconButton
               size="small"
               onClick={() => setViewMode('list')}
               sx={{
-                borderRadius: '6px',
+                borderRadius: '7px',
+                width: 36,
+                height: 36,
                 backgroundColor: viewMode === 'list' ? '#ffffff' : 'transparent',
                 color: viewMode === 'list' ? '#028090' : '#64748B',
+                boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
+                transition: 'all 0.2s ease-in-out',
               }}
             >
-              <FormatListBulletedIcon sx={{ fontSize: 18 }} />
+              <FormatListBulletedIcon sx={{ fontSize: 19 }} />
             </IconButton>
           </Box>
 
@@ -244,14 +264,17 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
             onClick={onCreateSubProjectClick}
             sx={{
               textTransform: 'none',
-              borderRadius: '8px',
-              fontWeight: 700,
-              px: 2.5,
-              py: 1,
+              height: 44,
+              borderRadius: '10px',
+              fontWeight: 600,
+              fontSize: '14px',
+              px: 2.8,
               backgroundColor: '#34b9cb',
-              boxShadow: '0 2px 8px rgba(52, 185, 203, 0.25)',
+              boxShadow: '0 2px 8px rgba(52, 185, 203, 0.3)',
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
                 backgroundColor: '#028090',
+                boxShadow: '0 4px 12px rgba(2, 128, 144, 0.35)',
               },
             }}
           >
@@ -265,32 +288,32 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
         <Box
           sx={{
             textAlign: 'center',
-            py: 7,
-            px: 2,
+            py: 8,
+            px: 3,
             backgroundColor: '#ffffff',
             borderRadius: '16px',
-            border: '2px dashed #CBD5E1',
+            border: '2px dashed #E2E8F0',
           }}
         >
           <Box
             sx={{
-              width: 54,
-              height: 54,
+              width: 56,
+              height: 56,
               borderRadius: '50%',
-              backgroundColor: '#FEF2F2',
-              color: '#34b9cb',
+              backgroundColor: '#E0F2FE',
+              color: '#028090',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 16px',
             }}
           >
-            <FolderOpenIcon sx={{ fontSize: 30 }} />
+            <FolderOpenIcon sx={{ fontSize: 28 }} />
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#0F172A', mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '18px', color: '#0F172A', mb: 1 }}>
             No Sub Projects Found
           </Typography>
-          <Typography variant="body2" sx={{ color: '#64748B', maxWidth: 440, margin: '0 auto 20px', lineHeight: 1.5 }}>
+          <Typography variant="body2" sx={{ color: '#64748B', fontSize: '14px', maxWidth: 440, margin: '0 auto 24px', lineHeight: 1.5 }}>
             {searchQuery
               ? `No sub-projects match "${searchQuery}". Try clearing your search.`
               : `No sub-project workspaces configured under ${parentProject.name} yet.`}
@@ -299,7 +322,7 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
             <Button
               variant="outlined"
               onClick={() => setSearchQuery('')}
-              sx={{ textTransform: 'none', borderRadius: '8px' }}
+              sx={{ textTransform: 'none', borderRadius: '10px', height: 40, px: 2.5, fontWeight: 600, borderColor: '#CBD5E1', color: '#334155' }}
             >
               Clear Search
             </Button>
@@ -308,7 +331,7 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
               variant="contained"
               startIcon={<AddIcon />}
               onClick={onCreateSubProjectClick}
-              sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 700, backgroundColor: '#34b9cb' }}
+              sx={{ textTransform: 'none', borderRadius: '10px', height: 42, fontWeight: 600, px: 3, backgroundColor: '#34b9cb', '&:hover': { backgroundColor: '#028090' } }}
             >
               Create Sub Project
             </Button>
@@ -320,8 +343,8 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: viewMode === 'list' ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))',
-              gap: '22px',
+              gridTemplateColumns: viewMode === 'list' ? '1fr' : 'repeat(auto-fill, minmax(380px, 1fr))',
+              gap: '24px',
             }}
           >
             {filteredSubProjects.map((sp, idx) => {
@@ -334,18 +357,19 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
                   sx={{
                     position: 'relative',
                     borderRadius: '16px',
-                    border: '1.5px solid #E2E8F0',
-                    boxShadow: '0 4px 14px rgba(15, 23, 42, 0.04)',
+                    border: '1.5px solid #E5E7EB',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
                     cursor: 'pointer',
-                    transition: 'all 0.25s ease',
+                    transition: 'all 0.22s ease-in-out',
                     display: 'flex',
                     flexDirection: 'column',
                     height: '100%',
                     overflow: 'hidden',
+                    backgroundColor: '#ffffff',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 16px 36px rgba(15, 23, 42, 0.1)',
-                      borderColor: 'rgba(52, 185, 203, 0.5)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                      borderColor: '#34b9cb',
                     },
                   }}
                 >
@@ -359,8 +383,8 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
                   />
 
                   <Box sx={{ p: 2.5, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    {/* Header Row: Type Icon + Title + Endpoints Count + Three Dot */}
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.5 }}>
+                    {/* Top Row: Icon + Title + Menu */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
                         <Box
                           sx={{
@@ -372,7 +396,7 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
                             justifyContent: 'center',
                             backgroundColor: `${accentColor}15`,
                             color: accentColor,
-                            border: `1.5px solid ${accentColor}30`,
+                            border: `1px solid ${accentColor}30`,
                             flexShrink: 0,
                           }}
                         >
@@ -381,46 +405,50 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
                           </span>
                         </Box>
 
-                        <Box sx={{ minWidth: 0, flex: 1 }}>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{
-                              fontWeight: 800,
-                              color: '#0F172A',
-                              lineHeight: 1.2,
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
-                            title={sp.name}
-                          >
-                            {sp.name}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#028090', fontWeight: 700, display: 'block', mt: 0.2 }}>
-                            {sp.type || 'Sub-Project Workspace'}
-                          </Typography>
-                        </Box>
-                      </Box>
-
-                      {/* Endpoint Badge & Three-Dot Menu */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                        <Chip
-                          label={`${sp.urls ? sp.urls.length : 0} Endpoints`}
-                          size="small"
+                        <Typography
+                          variant="subtitle1"
                           sx={{
-                            backgroundColor: '#D1FAE5',
-                            color: '#047857',
-                            border: '1px solid #A7F3D0',
-                            fontWeight: 700,
-                            fontSize: '10.5px',
-                            height: 24,
+                            fontWeight: 600,
+                            fontSize: '16px',
+                            color: '#0F172A',
+                            lineHeight: 1.3,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            flex: 1,
+                            minWidth: 0,
                           }}
-                        />
-
-                        <IconButton size="small" onClick={(e) => handleOpenMenu(e, sp)}>
-                          <MoreVertIcon sx={{ color: '#64748B', fontSize: 20 }} />
-                        </IconButton>
+                          title={sp.name}
+                        >
+                          {sp.name}
+                        </Typography>
                       </Box>
+
+                      <IconButton size="small" onClick={(e) => handleOpenMenu(e, sp)}>
+                        <MoreVertIcon sx={{ color: '#64748B', fontSize: 19 }} />
+                      </IconButton>
+                    </Box>
+
+                    {/* Meta Row: Type + Endpoints Chip */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, mt: 1.2 }}>
+                      <Typography variant="caption" sx={{ color: '#028090', fontWeight: 500, fontSize: '13px' }}>
+                        {sp.type || 'Sub-Project Workspace'}
+                      </Typography>
+
+                      <Chip
+                        label={`${sp.urls ? sp.urls.length : 0} Endpoints`}
+                        size="small"
+                        onClick={(e) => e.stopPropagation()}
+                        sx={{
+                          backgroundColor: '#D1FAE5',
+                          color: '#059669',
+                          border: '1px solid #A7F3D0',
+                          fontWeight: 600,
+                          fontSize: '11.5px',
+                          height: 22,
+                          borderRadius: '16px',
+                        }}
+                      />
                     </Box>
 
                     {/* Description */}
@@ -428,8 +456,9 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
                       variant="body2"
                       sx={{
                         color: '#475569',
+                        fontSize: '14px',
                         mt: 1.5,
-                        mb: 2,
+                        mb: 1.5,
                         lineHeight: 1.5,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -443,30 +472,94 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
 
                     {/* Environment Badges */}
                     {sp.urls && sp.urls.length > 0 ? (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8, mb: 2 }}>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8, mb: 1.5 }}>
                         {sp.urls.map((u, i) => (
                           <Chip
                             key={i}
                             label={
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <strong style={{ color: '#028090' }}>{u.env}:</strong>
-                                <span>{u.url.replace(/^https?:\/\//, '')}</span>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+                                <LanguageIcon sx={{ fontSize: 13, color: '#028090' }} />
+                                <strong>{u.env}:</strong> {u.url}
                               </Box>
                             }
                             size="small"
-                            variant="outlined"
+                            component="a"
+                            href={u.url.startsWith('http') ? u.url : `https://${u.url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
                             sx={{
-                              backgroundColor: '#F8FAFC',
-                              borderColor: '#E2E8F0',
-                              fontSize: '11px',
-                              height: 22,
+                              backgroundColor: '#F0FDF4',
+                              color: '#166534',
+                              border: '1px solid #DCFCE7',
+                              fontWeight: 500,
+                              fontSize: '12px',
+                              height: 26,
+                              borderRadius: '8px',
+                              maxWidth: '100%',
+                              cursor: 'pointer',
+                              textDecoration: 'none',
+                              transition: 'all 0.2s ease-in-out',
+                              '&:hover': {
+                                backgroundColor: '#DCFCE7',
+                                borderColor: '#86EFAC',
+                                color: '#15803D',
+                              },
+                              '& .MuiChip-label': {
+                                px: 1,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              },
                             }}
                           />
                         ))}
                       </Box>
                     ) : null}
 
-                    {/* Footer Row: Metrics & Launch Action */}
+                    {/* Metrics Row: Stories, Cases, Scripts (Single Line, No Wrap) */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 1,
+                        mb: 1.5,
+                        py: 1,
+                        px: 1.5,
+                        backgroundColor: '#F8FAFC',
+                        borderRadius: '10px',
+                        border: '1px solid #F1F5F9',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                        <AutoStoriesIcon sx={{ fontSize: 16, color: '#3B82F6' }} />
+                        <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '12.5px', color: '#475569' }}>
+                          <strong style={{ color: '#0F172A', fontWeight: 700 }}>{sp.userStoriesCount ?? 0}</strong> Stories
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ height: 14, width: '1px', backgroundColor: '#CBD5E1' }} />
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                        <DescriptionIcon sx={{ fontSize: 16, color: '#10B981' }} />
+                        <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '12.5px', color: '#475569' }}>
+                          <strong style={{ color: '#0F172A', fontWeight: 700 }}>{sp.testCasesCount ?? 0}</strong> Cases
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ height: 14, width: '1px', backgroundColor: '#CBD5E1' }} />
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                        <CodeIcon sx={{ fontSize: 16, color: '#8B5CF6' }} />
+                        <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '12.5px', color: '#475569' }}>
+                          <strong style={{ color: '#0F172A', fontWeight: 700 }}>{sp.scriptsCount ?? 0}</strong> Scripts
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Footer */}
                     <Box
                       sx={{
                         borderTop: '1px dashed #E2E8F0',
@@ -476,92 +569,25 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         gap: 1,
-                        flexWrap: 'wrap',
                       }}
                     >
-                      {/* Metrics Pills */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Tooltip title="User Stories">
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              backgroundColor: '#F8FAFC',
-                              border: '1px solid #E2E8F0',
-                              px: 1.2,
-                              py: 0.4,
-                              borderRadius: '20px',
-                              fontSize: '12.5px',
-                              fontWeight: 700,
-                              color: '#1E293B',
-                            }}
-                          >
-                            <AutoStoriesIcon sx={{ fontSize: 15, color: '#028090' }} />
-                            <span>12</span>
-                          </Box>
-                        </Tooltip>
-
-                        <Tooltip title="Test Cases">
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              backgroundColor: '#F8FAFC',
-                              border: '1px solid #E2E8F0',
-                              px: 1.2,
-                              py: 0.4,
-                              borderRadius: '20px',
-                              fontSize: '12.5px',
-                              fontWeight: 700,
-                              color: '#1E293B',
-                            }}
-                          >
-                            <DescriptionIcon sx={{ fontSize: 15, color: '#028090' }} />
-                            <span>45</span>
-                          </Box>
-                        </Tooltip>
-
-                        <Tooltip title="Scripts">
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              backgroundColor: '#F8FAFC',
-                              border: '1px solid #E2E8F0',
-                              px: 1.2,
-                              py: 0.4,
-                              borderRadius: '20px',
-                              fontSize: '12.5px',
-                              fontWeight: 700,
-                              color: '#1E293B',
-                            }}
-                          >
-                            <CodeIcon sx={{ fontSize: 15, color: '#028090' }} />
-                            <span>18</span>
-                          </Box>
-                        </Tooltip>
-                      </Box>
-
                       {/* Created Date */}
                       <Box
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 0.5,
-                          fontSize: '11px',
-                          fontWeight: 600,
+                          gap: 0.6,
+                          fontSize: '12px',
+                          fontWeight: 500,
                           color: '#64748B',
-                          backgroundColor: '#F1F5F9',
+                          backgroundColor: '#F8FAFC',
                           px: 1.2,
                           py: 0.4,
-                          borderRadius: '12px',
-                          whiteSpace: 'nowrap',
+                          borderRadius: '8px',
+                          border: '1px solid #F1F5F9',
                         }}
                       >
-                        <ScheduleIcon sx={{ fontSize: 13 }} />
+                        <ScheduleIcon sx={{ fontSize: 14 }} />
                         <span>Created {formatCreatedDate(sp.createdAt || parentProject?.createdAt)}</span>
                       </Box>
                     </Box>
@@ -573,7 +599,7 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
         )
       )}
 
-      {/* ICON-ONLY Popover Menu (No Text!) */}
+      {/* ICON-ONLY Popover Menu */}
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -589,10 +615,10 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
         slotProps={{
           paper: {
             sx: {
-              borderRadius: '20px',
+              borderRadius: '16px',
               padding: '4px 6px',
-              boxShadow: '0 10px 25px rgba(15, 23, 42, 0.14)',
-              border: '1.5px solid #E2E8F0',
+              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)',
+              border: '1px solid #E5E7EB',
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
@@ -637,10 +663,20 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
         </Tooltip>
       </Popover>
 
-      {/* Delete Confirmation Modal (MUI Dialog) */}
+      {/* Delete Confirmation Modal */}
       {subProjectToDelete ? (
-        <Dialog open={Boolean(subProjectToDelete)} onClose={() => setSubProjectToDelete(null)} maxWidth="xs" fullWidth>
-          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2 }}>
+        <Dialog
+          open={Boolean(subProjectToDelete)}
+          onClose={() => setSubProjectToDelete(null)}
+          maxWidth="xs"
+          fullWidth
+          slotProps={{
+            paper: {
+              sx: { borderRadius: '16px', p: 1 },
+            },
+          }}
+        >
+          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2.5 }}>
             <Box
               sx={{
                 width: 44,
@@ -657,27 +693,27 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
               <WarningIcon sx={{ fontSize: 24 }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: '#0B1740', lineHeight: 1.2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '18px', color: '#0F172A', lineHeight: 1.2 }}>
                 Delete Sub-Project
               </Typography>
-              <Typography variant="caption" sx={{ color: '#64708A' }}>
+              <Typography variant="caption" sx={{ color: '#64748B', fontSize: '12px' }}>
                 This action cannot be undone
               </Typography>
             </Box>
           </DialogTitle>
 
-          <DialogContent sx={{ p: 2, pt: 0 }}>
-            <Typography variant="body2" sx={{ color: '#475569', lineHeight: 1.5 }}>
-              Are you sure you want to delete <strong style={{ color: '#0B1740' }}>{subProjectToDelete.name}</strong>? All associated test suites and execution logs will be permanently removed.
+          <DialogContent sx={{ px: 2.5, py: 1 }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontSize: '14px', lineHeight: 1.5 }}>
+              Are you sure you want to delete <strong style={{ color: '#0F172A' }}>{subProjectToDelete.name}</strong>? All associated test suites and execution logs will be permanently removed.
             </Typography>
           </DialogContent>
 
-          <DialogActions sx={{ p: 2 }}>
+          <DialogActions sx={{ p: 2.5 }}>
             <Button
               onClick={() => setSubProjectToDelete(null)}
               variant="outlined"
               color="inherit"
-              sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}
+              sx={{ textTransform: 'none', borderRadius: '10px', height: 40, px: 2.5, fontWeight: 600, borderColor: '#CBD5E1' }}
             >
               Cancel
             </Button>
@@ -692,8 +728,9 @@ export const SubProjectsPage: React.FC<SubProjectsPageProps> = ({
               color="error"
               sx={{
                 textTransform: 'none',
-                borderRadius: '8px',
-                fontWeight: 700,
+                borderRadius: '10px',
+                height: 40,
+                fontWeight: 600,
                 px: 2.5,
                 backgroundColor: '#EF4444',
                 boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',

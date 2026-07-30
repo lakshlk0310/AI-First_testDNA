@@ -8,10 +8,13 @@ export interface SubProject {
   id: string;
   name: string;
   desc: string;
-  icon?: string;
   type?: string;
+  icon?: string;
   createdAt?: string;
   urls?: EnvironmentUrl[];
+  userStoriesCount?: number;
+  testCasesCount?: number;
+  scriptsCount?: number;
 }
 
 export interface Project {
@@ -19,14 +22,9 @@ export interface Project {
   name: string;
   desc: string;
   baseUrl?: string;
-  creationMethod?: string;
   status?: string;
-  userStoriesCount?: number;
-  testCasesCount?: number;
-  scriptsCount?: number;
   icon?: string;
   category?: string;
-  tags?: string[];
   createdAt?: string;
   updatedAt?: string;
   subProjects: SubProject[];

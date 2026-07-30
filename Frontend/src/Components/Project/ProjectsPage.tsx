@@ -79,8 +79,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
       p.name.toLowerCase().includes(q) ||
       p.id.toLowerCase().includes(q) ||
       (p.desc && p.desc.toLowerCase().includes(q)) ||
-      (p.category && p.category.toLowerCase().includes(q)) ||
-      (p.tags && p.tags.some((t) => t.toLowerCase().includes(q)));
+      (p.category && p.category.toLowerCase().includes(q))
 
     const matchesStatus =
       statusFilter === 'All' ||
@@ -340,7 +339,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: viewMode === 'list' ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))',
+              gridTemplateColumns: viewMode === 'list' ? '1fr' : 'repeat(auto-fill, minmax(380px, 1fr))',
               gap: '24px',
             }}
           >
@@ -381,8 +380,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                   />
 
                   <Box sx={{ p: 2.5, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    {/* Header Row */}
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.5 }}>
+                    {/* Top Row: Icon + Title + Menu */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
                         <Box
                           sx={{
@@ -403,53 +402,55 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                           </span>
                         </Box>
 
-                        <Box sx={{ minWidth: 0, flex: 1 }}>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{
-                              fontWeight: 600,
-                              fontSize: '16px',
-                              color: '#0F172A',
-                              lineHeight: 1.3,
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
-                            title={proj.name}
-                          >
-                            {proj.name}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#028090', fontWeight: 500, fontSize: '13px', display: 'block', mt: 0.2 }}>
-                            {proj.category || 'General Workspace'}
-                          </Typography>
-                        </Box>
-                      </Box>
-
-                      {/* Status Badge & Menu */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                        <Chip
-                          label={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
-                              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: badgeStyle.color }} />
-                              {proj.status || 'Ongoing'}
-                            </Box>
-                          }
-                          size="small"
+                        <Typography
+                          variant="subtitle1"
                           sx={{
-                            backgroundColor: badgeStyle.bg,
-                            color: badgeStyle.color,
-                            border: `1px solid ${badgeStyle.border}`,
                             fontWeight: 600,
-                            fontSize: '12px',
-                            height: 24,
-                            borderRadius: '16px',
+                            fontSize: '16px',
+                            color: '#0F172A',
+                            lineHeight: 1.3,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            flex: 1,
+                            minWidth: 0,
                           }}
-                        />
-
-                        <IconButton size="small" onClick={(e) => handleOpenMenu(e, proj)}>
-                          <MoreVertIcon sx={{ color: '#64748B', fontSize: 19 }} />
-                        </IconButton>
+                          title={proj.name}
+                        >
+                          {proj.name}
+                        </Typography>
                       </Box>
+
+                      <IconButton size="small" onClick={(e) => handleOpenMenu(e, proj)}>
+                        <MoreVertIcon sx={{ color: '#64748B', fontSize: 19 }} />
+                      </IconButton>
+                    </Box>
+
+                    {/* Meta Row: Category + Status Chip */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, mt: 1.2 }}>
+                      <Typography variant="caption" sx={{ color: '#028090', fontWeight: 500, fontSize: '13px' }}>
+                        {proj.category || 'General Workspace'}
+                      </Typography>
+
+                      <Chip
+                        label={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+                            <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: badgeStyle.color }} />
+                            {proj.status || 'Ongoing'}
+                          </Box>
+                        }
+                        size="small"
+                        onClick={(e) => e.stopPropagation()}
+                        sx={{
+                          backgroundColor: badgeStyle.bg,
+                          color: badgeStyle.color,
+                          border: `1px solid ${badgeStyle.border}`,
+                          fontWeight: 600,
+                          fontSize: '12px',
+                          height: 24,
+                          borderRadius: '16px',
+                        }}
+                      />
                     </Box>
 
                     {/* Description */}

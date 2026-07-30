@@ -14,7 +14,7 @@ import {
   Typography,
   Alert,
 } from '@mui/material';
-import { Close as CloseIcon, EditNote as EditNoteIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Close as CloseIcon, EditNote as EditNoteIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import type { SubProject, EnvironmentUrl } from '../../types/project';
 
 interface EditSubProjectModalProps {
@@ -24,9 +24,6 @@ interface EditSubProjectModalProps {
   onClose: () => void;
   onSaveSubProject: (parentId: string, updatedSubProject: SubProject) => void;
 }
-
-const SUB_TYPES = ['Web Application', 'Mobile App (iOS/Android)', 'Core REST / GraphQL API', 'Cloud Engine Service', 'Microservice'];
-const ICON_OPTIONS = ['layers', 'language', 'smartphone', 'api', 'database', 'terminal', 'dashboard'];
 
 export const EditSubProjectModal: React.FC<EditSubProjectModalProps> = ({
   isOpen,
@@ -41,6 +38,7 @@ export const EditSubProjectModal: React.FC<EditSubProjectModalProps> = ({
   const [type, setType] = useState('Web Application');
   const [urls, setUrls] = useState<EnvironmentUrl[]>([]);
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (subProject) {
@@ -76,6 +74,7 @@ export const EditSubProjectModal: React.FC<EditSubProjectModalProps> = ({
       return;
     }
 
+    setIsSaving(true);
     const updated: SubProject = {
       ...subProject,
       name: name.trim(),
@@ -86,58 +85,126 @@ export const EditSubProjectModal: React.FC<EditSubProjectModalProps> = ({
     };
 
     onSaveSubProject(parentProjectId, updated);
+    setIsSaving(false);
     onClose();
   };
 
+  const inputStyles = {
+    '& .MuiOutlinedInput-root': {
+      height: 44,
+      borderRadius: '10px',
+      fontSize: '14px',
+      backgroundColor: '#FFFFFF',
+      transition: 'all 0.2s ease-in-out',
+      '& fieldset': { borderColor: '#E5E7EB' },
+      '&:hover fieldset': { borderColor: '#CBD5E1' },
+      '&.Mui-focused fieldset': {
+        borderColor: '#3B82F6',
+        boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
+      },
+    },
+  };
+
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      maxWidth={false}
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            maxWidth: '720px',
+            width: '100%',
+            maxHeight: '88vh',
+            borderRadius: '16px',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          },
+        },
+      }}
+    >
+      {/* Header */}
+      <DialogTitle
+        sx={{
+          m: 0,
+          p: '24px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #F1F5F9',
+          flexShrink: 0,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              borderRadius: '10px',
-              backgroundColor: 'rgba(2, 128, 144, 0.12)',
-              border: '1px solid rgba(2, 128, 144, 0.2)',
+              width: 44,
+              height: 44,
+              borderRadius: '12px',
+              backgroundColor: '#E0F2FE',
+              color: '#028090',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#028090',
+              flexShrink: 0,
             }}
           >
-            <EditNoteIcon />
+            <EditNoteIcon sx={{ fontSize: 26 }} />
           </Box>
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0B1740', lineHeight: 1.2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '20px', color: '#0F172A', lineHeight: 1.2 }}>
               Edit Sub-Project
             </Typography>
-            <Typography variant="caption" sx={{ color: '#64708A' }}>
-              Update details for {subProject.name}
+            <Typography variant="caption" sx={{ color: '#64748B', fontSize: '13px', display: 'block', mt: 0.3 }}>
+              Update workspace settings for {subProject.name}
             </Typography>
           </Box>
         </Box>
-        <IconButton onClick={onClose} aria-label="close">
+        <IconButton onClick={onClose} aria-label="close" sx={{ color: '#64748B' }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
-      <form onSubmit={handleSubmit}>
-        <DialogContent dividers sx={{ py: 2.5 }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        <DialogContent
+          sx={{
+            p: '28px 32px',
+            flex: 1,
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: '#F1F5F9',
+              borderRadius: '10px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#CBD5E1',
+              borderRadius: '10px',
+              '&:hover': {
+                backgroundColor: '#94A3B8',
+              },
+            },
+          }}
+        >
           {error ? (
-            <Alert severity="error" sx={{ mb: 2, borderRadius: '8px' }}>
+            <Alert severity="error" sx={{ mb: 3, borderRadius: '10px' }}>
               {error}
             </Alert>
           ) : null}
 
-          {/* Sub Project Name * */}
-          <Box sx={{ mb: 2.5 }}>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
-              Sub-Project Name <span style={{ color: 'red' }}>*</span>
+          {/* Sub Project Name */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
+              Sub-Project Name <span style={{ color: '#EF4444' }}>*</span>
             </Typography>
             <TextField
               fullWidth
               size="small"
+              autoFocus
               placeholder="e.g. Mobile Banking App"
               value={name}
               onChange={(e) => {
@@ -146,122 +213,168 @@ export const EditSubProjectModal: React.FC<EditSubProjectModalProps> = ({
               }}
               required
               variant="outlined"
+              sx={inputStyles}
             />
           </Box>
 
+          {/* Type Selection */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
+              Application Type
+            </Typography>
+            <FormControl fullWidth size="small">
+              <Select
+                value={type}
+                onChange={(e) => setType(e.target.value as string)}
+                sx={{
+                  height: 44,
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  '& fieldset': { borderColor: '#E5E7EB' },
+                  '&:hover fieldset': { borderColor: '#CBD5E1' },
+                  '&.Mui-focused fieldset': { borderColor: '#3B82F6' },
+                }}
+              >
+                <MenuItem value="Web Application">Web Application</MenuItem>
+                <MenuItem value="Mobile App (iOS/Android)">Mobile App (iOS/Android)</MenuItem>
+                <MenuItem value="Core REST / GraphQL API">Core REST / GraphQL API</MenuItem>
+                <MenuItem value="Cloud Engine Service">Cloud Engine Service</MenuItem>
+                <MenuItem value="Microservice">Microservice</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
           {/* Description */}
-          <Box sx={{ mb: 2.5 }}>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
-              Sub-Project Description
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
+              Sub-Project Description <Typography component="span" sx={{ color: '#94A3B8', fontSize: '12px' }}>(Optional)</Typography>
             </Typography>
             <TextField
               fullWidth
               multiline
-              rows={2}
-              placeholder="Brief summary of sub-project application..."
+              rows={3}
+              placeholder="Enter sub-project description..."
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  backgroundColor: '#FFFFFF',
+                  minHeight: '80px',
+                  transition: 'all 0.2s ease-in-out',
+                  '& fieldset': { borderColor: '#E5E7EB' },
+                  '&:hover fieldset': { borderColor: '#CBD5E1' },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#3B82F6',
+                    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
+                  },
+                },
+              }}
             />
-          </Box>
-
-          {/* Type & Icon */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2.5 }}>
-            <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
-                Application Type
-              </Typography>
-              <FormControl fullWidth size="small">
-                <Select value={type} onChange={(e) => setType(e.target.value as string)}>
-                  {SUB_TYPES.map((t) => (
-                    <MenuItem key={t} value={t}>
-                      {t}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-
-            <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', display: 'block', mb: 0.8, textTransform: 'uppercase' }}>
-                Icon Symbol
-              </Typography>
-              <FormControl fullWidth size="small">
-                <Select value={icon} onChange={(e) => setIcon(e.target.value as string)}>
-                  {ICON_OPTIONS.map((ic) => (
-                    <MenuItem key={ic} value={ic}>
-                      {ic}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
           </Box>
 
           {/* Environment Endpoints */}
           <Box sx={{ mb: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#0B1740', textTransform: 'uppercase' }}>
-                Environment Endpoints
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155' }}>
+                Environment Endpoints <Typography component="span" sx={{ color: '#94A3B8', fontSize: '12px' }}>(Optional)</Typography>
               </Typography>
               <Button
-                variant="outlined"
                 size="small"
+                startIcon={<AddIcon />}
                 onClick={handleAddUrl}
-                sx={{ textTransform: 'none', borderRadius: '6px', fontSize: '12px', py: 0.3 }}
+                sx={{ textTransform: 'none', fontWeight: 600, fontSize: '13px', color: '#028090' }}
               >
-                + Add Endpoint
+                Add Endpoint
               </Button>
             </Box>
 
-            {urls.length === 0 ? (
-              <Typography variant="caption" sx={{ color: '#64748B', fontStyle: 'italic', display: 'block', py: 1 }}>
-                No environment endpoints added. Click "+ Add Endpoint" to add STG, QA, or PROD URLs.
-              </Typography>
-            ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxHeight: 180, overflowY: 'auto', pr: 0.5 }}>
-                {urls.map((u, i) => (
-                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <TextField
-                      size="small"
-                      placeholder="ENV (e.g. STG)"
-                      value={u.env}
-                      onChange={(e) => handleUrlChange(i, 'env', e.target.value)}
-                      sx={{ width: 110 }}
-                    />
-                    <TextField
-                      fullWidth
-                      size="small"
-                      placeholder="https://app.dewa.gov.ae/stg"
-                      value={u.url}
-                      onChange={(e) => handleUrlChange(i, 'url', e.target.value)}
-                    />
-                    <IconButton size="small" onClick={() => handleRemoveUrl(i)} sx={{ color: '#EF4444' }}>
-                      <DeleteIcon sx={{ fontSize: 18 }} />
-                    </IconButton>
-                  </Box>
-                ))}
+            {urls.map((u, i) => (
+              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                <FormControl size="small" sx={{ width: 110 }}>
+                  <Select
+                    value={u.env}
+                    onChange={(e) => handleUrlChange(i, 'env', e.target.value as string)}
+                    sx={{
+                      height: 44,
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      '& fieldset': { borderColor: '#E5E7EB' },
+                    }}
+                  >
+                    <MenuItem value="DEV">DEV</MenuItem>
+                    <MenuItem value="STG">STG</MenuItem>
+                    <MenuItem value="QA">QA</MenuItem>
+                    <MenuItem value="UAT">UAT</MenuItem>
+                    <MenuItem value="PROD">PROD</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="https://staging.app.com"
+                  value={u.url}
+                  onChange={(e) => handleUrlChange(i, 'url', e.target.value)}
+                  variant="outlined"
+                  sx={inputStyles}
+                />
+
+                <IconButton size="small" onClick={() => handleRemoveUrl(i)} sx={{ color: '#EF4444' }}>
+                  <DeleteIcon sx={{ fontSize: 20 }} />
+                </IconButton>
               </Box>
-            )}
+            ))}
           </Box>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2, pt: 1 }}>
-          <Button onClick={onClose} variant="outlined" color="inherit" sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}>
+        {/* Footer Actions */}
+        <DialogActions sx={{ p: '20px 32px', borderTop: '1px solid #F1F5F9', gap: 1.5, flexShrink: 0 }}>
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            color="inherit"
+            sx={{
+              textTransform: 'none',
+              borderRadius: '10px',
+              height: 42,
+              px: 2.5,
+              fontWeight: 600,
+              fontSize: '14px',
+              borderColor: '#CBD5E1',
+              color: '#334155',
+            }}
+          >
             Cancel
           </Button>
           <Button
             type="submit"
             variant="contained"
+            disabled={!name.trim() || isSaving}
             sx={{
               textTransform: 'none',
-              borderRadius: '8px',
-              fontWeight: 700,
+              borderRadius: '10px',
+              height: 42,
+              px: 3,
+              fontWeight: 600,
+              fontSize: '14px',
               backgroundColor: '#34b9cb',
-              '&:hover': { backgroundColor: '#028090' },
+              boxShadow: '0 2px 8px rgba(52, 185, 203, 0.3)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: '#028090',
+                boxShadow: '0 4px 12px rgba(2, 128, 144, 0.35)',
+              },
+              '&.Mui-disabled': {
+                backgroundColor: '#E2E8F0',
+                color: '#94A3B8',
+              },
             }}
           >
-            Save Changes
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
         </DialogActions>
       </form>

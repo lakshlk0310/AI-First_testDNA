@@ -64,15 +64,10 @@ def create_project(project_data: ProjectCreate):
         "name": name,
         "desc": project_data.desc.strip() if project_data.desc else "",
         "baseUrl": project_data.baseUrl.strip() if project_data.baseUrl else "",
-        "creationMethod": project_data.creationMethod or "direct",
         "status": project_data.status or "Ongoing",
         "icon": project_data.icon or "folder",
         "category": project_data.category or "General",
-        "tags": project_data.tags or [],
         "subProjects": [sp.dict() for sp in (project_data.subProjects or [])],
-        "userStoriesCount": project_data.userStoriesCount if project_data.userStoriesCount is not None else 0,
-        "testCasesCount": project_data.testCasesCount if project_data.testCasesCount is not None else 0,
-        "scriptsCount": project_data.scriptsCount if project_data.scriptsCount is not None else 0,
         "createdAt": now_str,
         "updatedAt": now_str,
     }
@@ -97,22 +92,12 @@ def update_project(project_id: str, updates: ProjectUpdate):
         update_data["desc"] = updates.desc.strip()
     if updates.baseUrl is not None:
         update_data["baseUrl"] = updates.baseUrl.strip()
-    if updates.creationMethod is not None:
-        update_data["creationMethod"] = updates.creationMethod
     if updates.status is not None:
         update_data["status"] = updates.status
     if updates.icon is not None:
         update_data["icon"] = updates.icon
     if updates.category is not None:
         update_data["category"] = updates.category
-    if updates.tags is not None:
-        update_data["tags"] = updates.tags
-    if updates.userStoriesCount is not None:
-        update_data["userStoriesCount"] = updates.userStoriesCount
-    if updates.testCasesCount is not None:
-        update_data["testCasesCount"] = updates.testCasesCount
-    if updates.scriptsCount is not None:
-        update_data["scriptsCount"] = updates.scriptsCount
     
     update_data["updatedAt"] = datetime.utcnow().isoformat()
     
@@ -151,9 +136,11 @@ def create_subproject(project_id: str, sub_data: SubProjectCreate):
         "id": sub_id,
         "name": name,
         "desc": sub_data.desc.strip() if sub_data.desc else "",
-        "icon": sub_data.icon or "layers",
         "type": sub_data.type or "Web Application",
         "urls": [u.dict() for u in (sub_data.urls or [])],
+        "userStoriesCount": sub_data.userStoriesCount if sub_data.userStoriesCount is not None else 0,
+        "testCasesCount": sub_data.testCasesCount if sub_data.testCasesCount is not None else 0,
+        "scriptsCount": sub_data.scriptsCount if sub_data.scriptsCount is not None else 0,
         "createdAt": datetime.utcnow().isoformat(),
     }
     
@@ -207,12 +194,16 @@ def update_subproject(project_id: str, subproject_id: str, updates: SubProjectUp
                 sp["name"] = updates.name.strip()
             if updates.desc is not None:
                 sp["desc"] = updates.desc.strip()
-            if updates.icon is not None:
-                sp["icon"] = updates.icon
             if updates.type is not None:
                 sp["type"] = updates.type
             if updates.urls is not None:
                 sp["urls"] = [u.dict() for u in updates.urls]
+            if updates.userStoriesCount is not None:
+                sp["userStoriesCount"] = updates.userStoriesCount
+            if updates.testCasesCount is not None:
+                sp["testCasesCount"] = updates.testCasesCount
+            if updates.scriptsCount is not None:
+                sp["scriptsCount"] = updates.scriptsCount
             break
     
     if not found:
@@ -225,4 +216,3 @@ def update_subproject(project_id: str, subproject_id: str, updates: SubProjectUp
     
     updated_doc = collection.find_one({"id": project_id})
     return {"success": True, "message": "Sub-project updated successfully", "data": clean_doc(updated_doc)}
-

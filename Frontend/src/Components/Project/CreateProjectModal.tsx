@@ -104,8 +104,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
           sx: {
             maxWidth: '720px',
             width: '100%',
+            maxHeight: '88vh',
             borderRadius: '16px',
             boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)',
+            display: 'flex',
+            flexDirection: 'column',
             overflow: 'hidden',
           },
         },
@@ -120,6 +123,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           borderBottom: '1px solid #F1F5F9',
+          flexShrink: 0,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -152,8 +156,28 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
         </IconButton>
       </DialogTitle>
 
-      <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ p: '28px 32px' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        <DialogContent
+          sx={{
+            p: '28px 32px',
+            flex: 1,
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: '#F1F5F9',
+              borderRadius: '10px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#CBD5E1',
+              borderRadius: '10px',
+              '&:hover': {
+                backgroundColor: '#94A3B8',
+              },
+            },
+          }}
+        >
           {/* Project Name */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
@@ -222,7 +246,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
           {/* Category & Icon */}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2.5 }}>
-            {/* <Box>
+            <Box>
               <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
                 Category
               </Typography>
@@ -248,9 +272,9 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   <MenuItem value="Enterprise SaaS">Enterprise SaaS</MenuItem>
                 </Select>
               </FormControl>
-            </Box> */}
+            </Box>
 
-            {/* <Box>
+            <Box>
               <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '13px', color: '#334155', mb: 1 }}>
                 Icon Symbol
               </Typography>
@@ -276,12 +300,12 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   <MenuItem value="cloud">Cloud Service</MenuItem>
                 </Select>
               </FormControl>
-            </Box> */}
+            </Box>
           </Box>
         </DialogContent>
 
         {/* Footer Actions */}
-        <DialogActions sx={{ p: '20px 32px', borderTop: '1px solid #F1F5F9', gap: 1.5 }}>
+        <DialogActions sx={{ p: '20px 32px', borderTop: '1px solid #F1F5F9', gap: 1.5, flexShrink: 0 }}>
           <Button
             onClick={onClose}
             variant="outlined"
